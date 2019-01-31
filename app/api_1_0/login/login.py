@@ -1,6 +1,6 @@
 from flask import jsonify, request, current_app, json
 from .. import api
-from ...models import Teacher
+from ...models import Teacher, Teacher_Type, TeacherInfo
 from app import db
 from werkzeug.security import generate_password_hash
 
@@ -30,25 +30,24 @@ def teacher_login():
 @api.route('/login/getinfo', methods=['GET', 'POST'])
 def getInfo():
     teacher = Teacher.query.filter_by(number=request.json['token']).first()
-    if teacher is not None and teacher.type == '1':
-        data = {
-            'code': 20000,
-            'data': {
-                'roles': ['sadmin'],
-                'name': '杜何哲',
-                'avatar': 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+    if teacher is not None:
+        role = Teacher_Type.query.filter_by(id=teacher.type).first().role
+        teacher_info = TeacherInfo.query.filter_by(number=request.json['token']).first()
+        if teacher_info is not None:
+            data = {
+                'code': 20000,
+                'data': {
+                    'roles': [role],
+                    'name': teacher_info.name,
+                    'avatar': 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+                }
             }
-        }
-    else:
-        data = {
-            'code': 20000,
-            'data': {
-                'roles': ['teacher'],
-                'name': '杜何哲',
-                'avatar': 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+        else:
+            data = {
+                'code': 20001,
+                'status': 'failed',
+                'reason': 'Do not have this account!'
             }
-        }
-
     return jsonify(data)
 
 

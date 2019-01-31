@@ -10,14 +10,12 @@ class Teacher(db.Model):
     number = db.Column(db.String, primary_key=False, nullable=False)
     password = db.Column(db.String, primary_key=False, nullable=False)
     type = db.Column(db.String, primary_key=False, nullable=False)
-    college_id = db.Column(db.String, primary_key=False, nullable=False)
 
-    def __init__(self, id, number, password, type, college_id):
+    def __init__(self, id, number, password, type):
         self.id = id
         self.number = number
         self.password = password
         self.type = type
-        self.college_id = college_id
 
     def __repr__(self):
         return '<Teacher %r>' % self.number
@@ -81,6 +79,13 @@ class TeacherInfo(db.Model):
     email = db.Column(db.String, primary_key=False, nullable=True)
 
 
+class Teacher_Type(db.Model):
+    __tablename__ = 'teacher_type'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    type_name = db.Column(db.String, primary_key=False)
+    role = db.Column(db.String, primary_key=False)
+
+
 class Department(db.Model):
     __tablename__ = 'department'
     id = db.Column(db.Integer, primary_key=True)
@@ -98,4 +103,3 @@ class Department(db.Model):
 
     def __repr__(self):
         return '<Department %r>' % self.name
-
