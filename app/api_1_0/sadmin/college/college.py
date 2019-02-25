@@ -1,11 +1,11 @@
 from flask import jsonify, request, json
-from .. import api
-from ...models import College, TeacherInfo
+from app.api_1_0.sadmin import sadmin
+from app.models import College, TeacherInfo
 from app import db
 from sqlalchemy import or_
 
 
-@api.route('/college/index', methods=['GET', 'POST'])
+@sadmin.route('/college/index', methods=['GET', 'POST'])
 def getAllCollegeInfo():
     # colleges = db.session.query(College.id, College.name, College.college_id, TeacherInfo.name, TeacherInfo.telephone)\
     #                     .join(TeacherInfo, College.id == TeacherInfo.college_id)\
@@ -21,7 +21,7 @@ def getAllCollegeInfo():
     return jsonify(data)
 
 
-@api.route('/college/update', methods=['GET', 'POST'])
+@sadmin.route('/college/update', methods=['GET', 'POST'])
 def collegeUpdate():
     college = College.query.filter_by(id=request.json['id']).first()
     if college is not None:
@@ -41,7 +41,7 @@ def collegeUpdate():
         })
 
 
-@api.route('/college/delete', methods=['GET', 'POST'])
+@sadmin.route('/college/delete', methods=['GET', 'POST'])
 def collegeDelete():
     college = College.query.filter_by(id=request.json['id']).first()
     if college is not None:
@@ -58,7 +58,7 @@ def collegeDelete():
         })
 
 
-@api.route('/college/add', methods=['GET', 'POST'])
+@sadmin.route('/college/add', methods=['GET', 'POST'])
 def collegeAdd():
     college = College.query.\
         filter(or_(College.college_id==request.json['college_id'], College.name==request.json['college_name'])).first()

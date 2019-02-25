@@ -20,6 +20,12 @@ def create_app(config_name):
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 
+    from .api_1_0.sadmin import sadmin as api_1_0_sadmin_blueprint
+    app.register_blueprint(api_1_0_sadmin_blueprint, url_prefix='/api/v1.0/sadmin')
+
+    from .api_1_0.normal import normal as api_1_0_normal_blueprint
+    app.register_blueprint(api_1_0_normal_blueprint, url_prefix='/api/v1.0/normal')
+
     return app
 
 

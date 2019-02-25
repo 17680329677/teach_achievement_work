@@ -103,3 +103,78 @@ class Department(db.Model):
 
     def __repr__(self):
         return '<Department %r>' % self.name
+
+
+class BookRank(db.Model):
+    __tablename__ = 'book_rank'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    rank_name = db.Column(db.String, primary_key=False, nullable=False)
+
+    def __repr__(self):
+        return '<BookRank %r>' % self.rank_name
+
+    def single_to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = str(getattr(self, key))
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
+
+class Book(db.Model):
+    __tablename__ = 'book'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    book_name = db.Column(db.String, primary_key=False, nullable=False)
+    book_number = db.Column(db.String, primary_key=False, nullable=False)
+    publish_year_month = db.Column(db.String, primary_key=False, nullable=False)
+    pages = db.Column(db.Integer, primary_key=False, nullable=True)
+    words = db.Column(db.Integer, primary_key=False, nullable=True)
+    isbn = db.Column(db.String, primary_key=False, nullable=False)
+    press = db.Column(db.String, primary_key=False, nullable=False)
+    version = db.Column(db.String, primary_key=False, nullable=False)
+    style = db.Column(db.String, primary_key=False, nullable=False)
+    rank_id = db.Column(db.Integer, primary_key=False, nullable=False)
+    college_id = db.Column(db.Integer, primary_key=False, nullable=False)
+    source_project = db.Column(db.String, primary_key=False, nullable=True)
+    status = db.Column(db.String, primary_key=False, nullable=False)
+    cover_path = db.Column(db.String, primary_key=False, nullable=True)
+    copyright_path = db.Column(db.String, primary_key=False, nullable=True)
+    content_path = db.Column(db.String, primary_key=False, nullable=True)
+    participate_teacher = db.Column(db.String, primary_key=False, nullable=True)
+    submit_teacher = db.Column(db.String, primary_key=False, nullable=False)
+    submit_time = db.Column(db.DateTime, primary_key=False, nullable=True)
+
+    def __repr__(self):
+        return '<Book %r>' % self.book_name
+
+    # def single_to_dict(self):
+    #     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    #
+    # def dobule_to_dict(self):
+    #     result = {}
+    #     for key in self.__mapper__.c.keys():
+    #         if getattr(self, key) is not None:
+    #             result[key] = str(getattr(self, key))
+    #         else:
+    #             result[key] = getattr(self, key)
+    #     return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
+
+
+
+

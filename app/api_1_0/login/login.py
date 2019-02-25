@@ -1,6 +1,6 @@
 from flask import jsonify, request, current_app, json
-from .. import api
-from ...models import Teacher, Teacher_Type, TeacherInfo
+from app.api_1_0 import api
+from app.models import Teacher, Teacher_Type, TeacherInfo
 from app import db
 from werkzeug.security import generate_password_hash
 
@@ -39,6 +39,7 @@ def getInfo():
                 'data': {
                     'roles': [role],
                     'name': teacher_info.name,
+                    'number': teacher_info.number,
                     'avatar': 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
                 }
             }

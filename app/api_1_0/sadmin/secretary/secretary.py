@@ -1,12 +1,12 @@
 from flask import jsonify, request, json
-from .. import api
-from ...models import College, TeacherInfo
+from app.api_1_0.sadmin import sadmin
+from app.models import College, TeacherInfo
 from app import db
 from sqlalchemy import or_, and_
 from JSONHelper import JSONHelper
 
 
-@api.route('/secretary/index', methods=['GET', 'POST'])
+@sadmin.route('/secretary/index', methods=['GET', 'POST'])
 def getAllSecretaryInfo():
     secretary = db.session.query(TeacherInfo.id.label('id'), College.name.label('college_name'),
                                  College.college_id.label('college_id'), TeacherInfo.name.label('secretary_name'),
@@ -23,7 +23,7 @@ def getAllSecretaryInfo():
         })
     else:
         return jsonify({
-            'code': 20000,
+            'code': 20001,
             'status': 'failed',
             'reason': 'something was wrong!'
         })
@@ -34,7 +34,7 @@ def getAllSecretaryInfo():
 """
 
 
-@api.route('/secretary/recall', methods=['GET', 'POST'])
+@sadmin.route('/secretary/recall', methods=['GET', 'POST'])
 def recallSecretary():
     secretary = TeacherInfo.query.filter_by(id=request.json['id']).first()
     if secretary is not None:
@@ -52,7 +52,7 @@ def recallSecretary():
         })
 
 
-@api.route('/secretary/update', methods=['GET', 'POST'])
+@sadmin.route('/secretary/update', methods=['GET', 'POST'])
 def updateSecretary():
     teacher = TeacherInfo.query.filter_by(number=request.json['number']).first()
     if teacher is not None and teacher.type_id == 2:
@@ -71,7 +71,7 @@ def updateSecretary():
         })
 
 
-@api.route('/secretary/search', methods=['GET', 'POST'])
+@sadmin.route('/secretary/search', methods=['GET', 'POST'])
 def searchSecretary():
     search_type = request.json['search_type']
     search_value = request.json['search_value']
