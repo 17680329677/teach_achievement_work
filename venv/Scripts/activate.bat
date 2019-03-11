@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set "VIRTUAL_ENV=F:\teach_achievement\teach_achievement_work\venv"
+set "VIRTUAL_ENV=D:\pyWeb\teach_achievement_work\venv"
 
 if not defined PROMPT (
     set "PROMPT=$P$G"

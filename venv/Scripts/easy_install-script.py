@@ -1,4 +1,4 @@
-#!F:\teach_achievement\teach_achievement_work\venv\Scripts\python.exe
+#!D:\pyWeb\teach_achievement_work\venv\Scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'setuptools==39.1.0','console_scripts','easy_install'
 __requires__ = 'setuptools==39.1.0'
 import re

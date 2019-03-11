@@ -1,4 +1,4 @@
-#!F:\teach_achievement\teach_achievement_work\venv\Scripts\python.exe
+#!D:\pyWeb\teach_achievement_work\venv\Scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'pip==10.0.1','console_scripts','pip3'
 __requires__ = 'pip==10.0.1'
 import re

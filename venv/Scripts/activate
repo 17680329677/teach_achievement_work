@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="F:\teach_achievement\teach_achievement_work\venv"
+VIRTUAL_ENV="D:\pyWeb\teach_achievement_work\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
