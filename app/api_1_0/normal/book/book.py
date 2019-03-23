@@ -5,7 +5,9 @@ from app import db
 from sqlalchemy import or_, and_
 from JSONHelper import JSONHelper
 
-
+'''
+获得普通教师出版物的总体信息信息 by request.json['number']=Book.submit_teacher
+'''
 @normal.route('/book/index', methods=['GET', 'POST'])
 def getAllBookInfo():
     book_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'), Book.book_number.label('book_number'),
@@ -26,7 +28,9 @@ def getAllBookInfo():
             'reason': 'something was wrong!'
         })
 
-
+'''
+获得普通教师出版物的所有详细信息 by Book.id
+'''
 @normal.route('/book/detail', methods=['GET', 'POST'])
 def getDetailBookInfo():
     detail_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'), Book.book_number.label('book_number'),
@@ -40,6 +44,7 @@ def getDetailBookInfo():
                             .join(College, Book.college_id == College.id)\
                             .join(TeacherInfo, Book.submit_teacher == TeacherInfo.number)\
                             .filter(Book.id == request.json['id']).all()
+
     if detail_info:
         return jsonify({
             'code': 20000,
@@ -53,7 +58,9 @@ def getDetailBookInfo():
             'reason': 'something was wrong!'
         })
 
-
+'''
+    提交书籍信息 将status 改为 已提交
+'''
 @normal.route('/book/changestatus/submit', methods=['GET', 'POST'])
 def changeToSubmit():
     book_info = Book.query.filter_by(id=request.json['id']).first()
@@ -78,7 +85,9 @@ def changeToSubmit():
             'reason': '提交失败!'
         })
 
-
+'''
+    教师主动撤销书籍提交请求 将status 改为 未提交 by Book.id
+'''
 @normal.route('/book/changestatus/recallsubmit', methods=['GET', 'POST'])
 def recallSubmit():
     book_info = Book.query.filter_by(id=request.json['id']).first()
@@ -103,7 +112,9 @@ def recallSubmit():
             'reason': '撤销提交失败!'
         })
 
-
+'''
+教师删除书籍信息  by Book.id
+'''
 @normal.route('/book/delete', methods=['GET', 'POST'])
 def deleteBookInfo():
     book_info = Book.query.filter_by(id=request.json['id']).first()
@@ -128,7 +139,9 @@ def deleteBookInfo():
             'reason': '删除失败!'
         })
 
-
+'''
+根据书籍名称或者书籍状态查询书籍信息 by number
+'''
 @normal.route('/book/search', methods=['GET', 'POST'])
 def searchBookInfo():
     search_type = request.json['search_type']

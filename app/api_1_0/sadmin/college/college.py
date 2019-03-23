@@ -4,7 +4,9 @@ from app.models import College, TeacherInfo
 from app import db
 from sqlalchemy import or_
 
-
+'''
+    学院信息展示
+'''
 @sadmin.route('/college/index', methods=['GET', 'POST'])
 def getAllCollegeInfo():
     # colleges = db.session.query(College.id, College.name, College.college_id, TeacherInfo.name, TeacherInfo.telephone)\
@@ -20,7 +22,9 @@ def getAllCollegeInfo():
     }
     return jsonify(data)
 
-
+'''
+    学院信息更新 by college_id
+'''
 @sadmin.route('/college/update', methods=['GET', 'POST'])
 def collegeUpdate():
     college = College.query.filter_by(id=request.json['id']).first()
@@ -40,7 +44,9 @@ def collegeUpdate():
             'reason': 'can not find the selected college!'
         })
 
-
+'''
+    学院信息删除
+'''
 @sadmin.route('/college/delete', methods=['GET', 'POST'])
 def collegeDelete():
     college = College.query.filter_by(id=request.json['id']).first()
@@ -57,7 +63,9 @@ def collegeDelete():
             'status': 'failed'
         })
 
-
+'''
+    学院信息添加
+'''
 @sadmin.route('/college/add', methods=['GET', 'POST'])
 def collegeAdd():
     college = College.query.\

@@ -5,7 +5,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = 'DHZAZY1216'
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:123456@39.96.44.243/teach_achievement'
+    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@127.0.0.1/teach_achievement'
+    # 'mysql+mysqlconnector://root:123456@39.96.44.243/teach_achievement'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

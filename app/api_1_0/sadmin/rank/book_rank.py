@@ -3,7 +3,13 @@ from app.api_1_0.sadmin import sadmin
 from app.models import BookRank
 from app import db
 
+'''
+    BookRank  教材级别表  例如：国家级精品教材等。
+'''
 
+'''
+    展示 教材级别信息
+'''
 @sadmin.route('/bookrank/index', methods=['GET', 'POST'])
 def getBookRankInfo():
     book_rank_info = BookRank.query.all()
@@ -20,7 +26,9 @@ def getBookRankInfo():
             'reason': '没有查询到信息！'
         })
 
-
+'''
+    交材级别信息更新 by book_rank.id
+'''
 @sadmin.route('/bookrank/update', methods=['GET', 'POST'])
 def updateBookRankInfo():
     id = request.json['id']
@@ -40,7 +48,9 @@ def updateBookRankInfo():
             'reason': '修改失败！'
         })
 
-
+'''
+    添加交材级别信息
+'''
 @sadmin.route('/bookrank/add', methods=['GET', 'POST'])
 def addBookRankInfo():
     rank_info = BookRank.query.filter_by(rank_name = request.json['rank_name']).first()
@@ -67,7 +77,9 @@ def addBookRankInfo():
             'reason': '保存失败！'
         })
 
-
+'''
+    删除交材级别信息
+'''
 @sadmin.route('/bookrank/delete', methods=['GET', 'POST'])
 def deleteBookRankInfo():
     book_rank = BookRank.query.filter_by(id=request.json['id']).first()

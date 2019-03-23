@@ -1,11 +1,13 @@
 from flask import jsonify, request, json
 from app.api_1_0.sadmin import sadmin
-from app.models import College, TeacherInfo
+from app.models import College, TeacherInfo,Teacher
 from app import db
 from sqlalchemy import or_, and_
 from JSONHelper import JSONHelper
 
-
+'''
+    当前已有的院级管理员(教务秘书)信息展示  TeacherInfo.type_id == 2
+'''
 @sadmin.route('/secretary/index', methods=['GET', 'POST'])
 def getAllSecretaryInfo():
     secretary = db.session.query(TeacherInfo.id.label('id'), College.name.label('college_name'),
@@ -28,12 +30,42 @@ def getAllSecretaryInfo():
             'reason': 'something was wrong!'
         })
 
+'''
+    增加院级管理员 by Teacher.number
+'''
+@sadmin.route('/secretary/add', methods=['GET', 'POST'])
+def addSecretary():
+    teacher = Teacher.query.filter_by(number = request.json['number']).first()
+    if teacher is not None:
+        if teacher.type == 2:
+            return jsonify({
+                'code': 20001,
+                'status': 'failed',
+                'reason': 'the secretary teacher has already existed'
+            })
+        else:
+            # 修改Teacher表的type：
+            teacher.type = 2
+            db.session.commit()
+            # 修改teacher_info表的type_id
+            teacherInfo = TeacherInfo.query.filter_by(number = request.json['number']).first()
+            if teacherInfo is not None:
+                teacherInfo.type_id = 2
+                db.session.commit()
+            return jsonify({
+                'code': 20000,
+                'status': 'success'
+            })
+    else:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': 'the teacher account is not exist,please registe a teacher account'
+        })
 
-"""
-    撤销指定教师的教务秘书职位
-"""
-
-
+'''
+    【更改】撤销指定教师的教务秘书职位 by TeacherInfo.id  把教师是院级管理员的身份改为普通教师
+'''
 @sadmin.route('/secretary/recall', methods=['GET', 'POST'])
 def recallSecretary():
     secretary = TeacherInfo.query.filter_by(id=request.json['id']).first()
@@ -46,12 +78,14 @@ def recallSecretary():
         })
     else:
         return jsonify({
-            'code': 20000,
+            'code': 20001,
             'status': 'failed',
             'reason': 'can not find the selected teacher or update wrong!'
         })
 
-
+'''
+    更改 院级管理员的 电话 mail信息 by TeacherInfo.number
+'''
 @sadmin.route('/secretary/update', methods=['GET', 'POST'])
 def updateSecretary():
     teacher = TeacherInfo.query.filter_by(number=request.json['number']).first()
@@ -70,7 +104,9 @@ def updateSecretary():
             'reason': 'teacher was not found or is not a secretary!'
         })
 
-
+'''
+    【查询】学院管理员详细信息查询 by 院级管理员名字 或者 学院名称 模糊查询
+'''
 @sadmin.route('/secretary/search', methods=['GET', 'POST'])
 def searchSecretary():
     search_type = request.json['search_type']
