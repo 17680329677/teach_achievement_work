@@ -4,7 +4,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 
 from sqlalchemy import Column, DateTime, Float, ForeignKey, String
-from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy.dialects.mysql import INTEGER,BIGINT
 from sqlalchemy.orm import relationship
 # from sqlalchemy.ext.declarative import declarative_base
 
@@ -13,6 +13,7 @@ from sqlalchemy.orm import relationship
 
 '''
 新增的库：2019.3.15修改
+新增关联：2019.4.29
 '''
 
 
@@ -65,36 +66,12 @@ class CertificateRank(db.Model):
         return v
 
 
-class ClassInfo(db.Model):
-    __tablename__ = 'class_info'
-
-    id = Column(INTEGER(11), primary_key=True)
-    class_name = Column(String(255), nullable=False)
-    college_id = Column(INTEGER(11), nullable=False)
-    grade = Column(String(60), nullable=False)
-    status = Column(String(20), nullable=False)
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
 
 class College(db.Model):
     __tablename__ = 'college'
 
     id = Column(INTEGER(11), primary_key=True)
     name = Column(String(255))
-    college_id = Column(String(255), index=True)
     department_num = Column(INTEGER(11))
     teacher_num = Column(INTEGER(11))
 
@@ -119,79 +96,7 @@ class College(db.Model):
         return v
 
 
-class DistributionDesire(db.Model):
-    __tablename__ = 'distribution_desire'
 
-    id = Column(INTEGER(11), primary_key=True)
-    college_id = Column(INTEGER(11), nullable=False)
-    student_id = Column(INTEGER(11), nullable=False)
-    distribution_id = Column(INTEGER(11), nullable=False)
-    desire_rank = Column(INTEGER(11), nullable=False)
-    submit_time = Column(DateTime, nullable=False)
-    status = Column(String(20), nullable=False)
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
-
-class DistributionInfo(db.Model):
-    __tablename__ = 'distribution_info'
-
-    id = Column(INTEGER(11), primary_key=True)
-    college_id = Column(INTEGER(11), nullable=False)
-    orientation_ids = Column(String(255), nullable=False)
-    num_limit = Column(String(255), nullable=False)
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=False)
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
-
-class DistributionResult(db.Model):
-    __tablename__ = 'distribution_result'
-
-    id = Column(INTEGER(11), primary_key=True)
-    college_id = Column(INTEGER(11), nullable=False)
-    student_id = Column(String(80), nullable=False)
-    distribution_id = Column(INTEGER(11), nullable=False)
-    status = Column(String(255), nullable=False)
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
 
 
 class InnovationRank(db.Model):
@@ -219,38 +124,19 @@ class InvigilateInfo(db.Model):
     __tablename__ = 'invigilate_info'
 
     id = Column(INTEGER(11), primary_key=True)
+    apply_teacher = Column(ForeignKey('teacher.number'), nullable=False, index=True)
     subject = Column(String(255), nullable=False)
-    semester_id = Column(INTEGER(11))
+    semester_id = Column(ForeignKey('semester_info.id'), index=True)
     _class = Column('class', String(255), nullable=False)
     college_id = Column(INTEGER(11), nullable=False)
-    exam_time = Column(DateTime)
+    exam_time = Column(BIGINT(20))
     location = Column(String(255), nullable=False)
     participate_teacher = Column(String(255), nullable=False)
-    submit_time = Column(DateTime, nullable=False)
+    submit_time = Column(BIGINT(20), nullable=False)
     status = Column(String(80))
 
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
-
-class MajorInfo(db.Model):
-    __tablename__ = 'major_info'
-
-    id = Column(INTEGER(11), primary_key=True)
-    major_name = Column(String(255), nullable=False)
-    college_id = Column(INTEGER(11), nullable=False)
-    department_id = Column(INTEGER(11), nullable=False)
+    teacher = relationship('Teacher')
+    semester = relationship('SemesterInfo')
 
     def dobule_to_dict(self):
         result = {}
@@ -332,30 +218,6 @@ class SemesterInfo(db.Model):
         return v
 
 
-class Student(db.Model):
-    __tablename__ = 'students'
-
-    id = Column(INTEGER(11), primary_key=True)
-    student_id = Column(String(255), nullable=False)
-    gender = Column(String(20), nullable=False)
-    class_id = Column(String(255), nullable=False)
-    password = Column(String(255), nullable=False)
-    college_id = Column(INTEGER(11), nullable=False)
-    gpa = Column(Float(255, True), nullable=False)
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
 
 
 class TeachReformPaper(db.Model):
@@ -365,7 +227,7 @@ class TeachReformPaper(db.Model):
     paper_name = Column(String(255))
     paper_number = Column(INTEGER(11))
     journal_name = Column(String(255))
-    publish_year_month = Column(String(255))
+    publish_year_month = Column(BIGINT(20))
     journal_year = Column(String(255))
     journal_number = Column(String(255))
     college_id = Column(INTEGER(11))
@@ -421,7 +283,7 @@ class Book(db.Model):
     id = Column(INTEGER(11), primary_key=True)
     book_name = Column(String(255), nullable=False)
     book_number = Column(String(255), nullable=False)
-    publish_year_month = Column(String(255), nullable=False)
+    publish_year_month = Column(BIGINT(20), nullable=False)
     pages = Column(INTEGER(11))
     words = Column(INTEGER(11))
     isbn = Column(String(255))
@@ -437,7 +299,7 @@ class Book(db.Model):
     content_path = Column(String(255))
     participate_teacher = Column(String(255))
     submit_teacher = Column(String(255), nullable=False)
-    submit_time = Column(DateTime)
+    submit_time = Column(BIGINT(20))
 
     college = relationship('College')
     rank = relationship('BookRank')
@@ -472,6 +334,31 @@ class Book(db.Model):
         return v
 
 
+class ClassInfo(db.Model):
+    __tablename__ = 'class_info'
+
+    id = Column(INTEGER(11), primary_key=True)
+    class_name = Column(String(255), nullable=False)
+    college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
+    grade = Column(String(60), nullable=False)
+    status = Column(String(20), nullable=False)
+
+    college = relationship('College')
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = str(getattr(self, key))
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
 
 
 class Department(db.Model):
@@ -485,12 +372,7 @@ class Department(db.Model):
 
     college = relationship('College')
 
-    def __init__(self, id, name, number, director, college_id):
-        self.id = id
-        self.name = name
-        self.number = number
-        self.director = director
-        self.college_id = college_id
+
 
     def __repr__(self):
         return '<Department %r>' % self.name
@@ -509,6 +391,31 @@ class Department(db.Model):
         v = [ven.dobule_to_dict() for ven in all_vendors]
         return v
 
+class DistributionInfo(db.Model):
+    __tablename__ = 'distribution_info'
+
+    id = Column(INTEGER(11), primary_key=True)
+    college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
+    orientation_name = Column(String(255), nullable=False)
+    num_limit = Column(String(255), nullable=False)
+    start_time = Column(BIGINT(20), nullable=False)
+    end_time = Column(BIGINT(20), nullable=False)
+
+    college = relationship('College')
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = str(getattr(self, key))
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
 
 class InnovationProject(db.Model):
     __tablename__ = 'innovation_project'
@@ -518,9 +425,9 @@ class InnovationProject(db.Model):
     project_number = Column(String(80), nullable=False)
     rank_id = Column(ForeignKey('innovation_rank.id'), nullable=False, index=True)
     college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
-    begin_year_month = Column(String(255))
-    mid_check_year__month = Column('mid_check_year_ month', String(255))
-    end_year_month = Column(String(255))
+    begin_year_month = Column(BIGINT(20))
+    mid_check_year_month = Column(BIGINT(20))
+    end_year_month = Column(BIGINT(20))
     mid_check_rank = Column(String(50))
     end_check_rank = Column(String(50))
     subject = Column(String(60))
@@ -528,7 +435,7 @@ class InnovationProject(db.Model):
     host_student = Column(String(255), nullable=False)
     participant_student = Column(String(255))
     remark = Column(String(255))
-    submit_time = Column(DateTime, nullable=False)
+    submit_time = Column(BIGINT(20), nullable=False)
 
     college = relationship('College')
     rank = relationship('InnovationRank')
@@ -581,12 +488,6 @@ class Teacher(db.Model):
     type = Column(ForeignKey('teacher_type.id'), nullable=False, index=True)
 
     teacher_type = relationship('TeacherType')
-
-    def __init__(self, id, number, password, type):
-        self.id = id
-        self.number = number
-        self.password = password
-        self.type = type
 
     def __repr__(self):
         return '<Teacher %r>' % self.number
@@ -660,6 +561,61 @@ class InnovationTeacher(db.Model):
         return v
 
 
+
+class MajorInfo(db.Model):
+    __tablename__ = 'major_info'
+
+    id = Column(INTEGER(11), primary_key=True)
+    major_name = Column(String(255), nullable=False)
+    college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
+    department_id = Column(ForeignKey('department.id'), nullable=False, index=True)
+
+    college = relationship('College')
+    department = relationship('Department')
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = str(getattr(self, key))
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
+class Student(db.Model):
+    __tablename__ = 'students'
+
+    id = Column(INTEGER(11), primary_key=True)
+    password = Column(String(255), nullable=False)
+    name = Column(String(40))
+    gender = Column(String(20))
+    class_id = Column(ForeignKey('class_info.id'), nullable=False, index=True)
+    gpa = Column(Float(255, True), nullable=False)
+
+    _class = relationship('ClassInfo')
+
+    def verify_password(self, password):
+        return check_password_hash(self.password, password)  #如果密码正确return true
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = str(getattr(self, key))
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
 class TeachReformProject(db.Model):
     __tablename__ = 'teach_reform_project'
 
@@ -669,9 +625,9 @@ class TeachReformProject(db.Model):
     type_child_id = Column(ForeignKey('project_child_type.id'), nullable=False, index=True)
     rank_id = Column(ForeignKey('project_rank.id'), nullable=False, index=True)
     college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
-    begin_year__month = Column('begin_year_ month', String(80))
-    mid_check_year__month = Column('mid_check_year_ month', String(80))
-    end_year_month = Column(String(80))
+    begin_year_month = Column(BIGINT(20))
+    mid_check_year_month = Column(BIGINT(20))
+    end_year_month = Column(BIGINT(20))
     mid_check_rank = Column(String(20))
     end_check_rank = Column(String(20))
     subject = Column(String(80))
@@ -681,7 +637,7 @@ class TeachReformProject(db.Model):
     remark = Column(String(255))
     grade = Column(String(255))
     funds = Column(String(100))
-    submit_time = Column(DateTime, nullable=False)
+    submit_time = Column(BIGINT(20), nullable=False)
 
     college = relationship('College')
     rank = relationship('ProjectRank')
@@ -736,7 +692,7 @@ class TeacherInfo(db.Model):
     name = Column(String(100), nullable=False)
     gender = Column(String(20), nullable=False)
     nationality = Column(String(20))
-    birth_year_month = Column(String(255))
+    birth_year_month = Column(BIGINT(20))
     department_id = Column(INTEGER(11), nullable=False)
     college_id = Column(INTEGER(11))
     teachertitle_id = Column(ForeignKey('teacher_title.id'), index=True)
@@ -744,10 +700,10 @@ class TeacherInfo(db.Model):
     type = Column(String(20))
     type_id = Column(ForeignKey('teacher_type.id'), nullable=False, index=True)
     status = Column(String(60))
-    work_begin_year_month = Column(String(255))
-    bjfu_join_year_month = Column(String(255))
+    work_begin_year_month = Column(BIGINT(20))
+    bjfu_join_year_month = Column(BIGINT(20))
     highest_education = Column(String(255))
-    highest_education_accord_year_month = Column(String(255))
+    highest_education_accord_year_month = Column(BIGINT(20))
     graduate_paper_title = Column(String(255))
     graduate_school = Column(String(255))
     research_direction = Column(String(255))
@@ -806,7 +762,7 @@ class TitleRecord(db.Model):
     id = Column(INTEGER(11), primary_key=True)
     datetime = Column(DateTime, nullable=False)
     teacher_number = Column(ForeignKey('teacher.number'), nullable=False, index=True)
-    teacher_title_id = Column(ForeignKey('teacher_title.id'), nullable=False, index=True)
+    teacher_title_id = Column(ForeignKey('teacher_title.id'), index=True)
     manager_title_id = Column(ForeignKey('teacher_title.id'), index=True)
 
     manager_title = relationship('TeacherTitle', primaryjoin='TitleRecord.manager_title_id == TeacherTitle.id')
@@ -836,14 +792,14 @@ class CertificateInfo(db.Model):
     rank_id = Column(ForeignKey('certificate_rank.id'), nullable=False, index=True)
     organize_unit = Column(String(255), nullable=False)
     teacher_number = Column(String(80), nullable=False)
-    grant_time = Column(DateTime, nullable=False)
+    grant_time = Column(BIGINT(20), nullable=False)
     project_id = Column(ForeignKey('teach_reform_project.id'), index=True)
     type = Column(String(60))
     certificate_pic_path = Column(String(255))
     status = Column(String(255), nullable=False)
     college_id = Column(ForeignKey('college.id'), index=True)
     participate_student = Column(String(255))
-    submit_time = Column(DateTime, nullable=False)
+    submit_time = Column(BIGINT(20), nullable=False)
 
     college = relationship('College')
     project = relationship('TeachReformProject')
@@ -864,13 +820,67 @@ class CertificateInfo(db.Model):
         return v
 
 
+
+class DistributionDesire(db.Model):
+    __tablename__ = 'distribution_desire'
+
+    id = Column(INTEGER(11), primary_key=True)
+    college_id = Column(INTEGER(11), nullable=False)
+    student_id = Column(ForeignKey('students.id'), nullable=False, index=True)
+    distribution_id = Column(INTEGER(11), nullable=False)
+    desire_rank = Column(INTEGER(11), nullable=False)
+    submit_time = Column(BIGINT(20), nullable=False)
+    status = Column(String(20), nullable=False)
+
+    student = relationship('Student')
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = str(getattr(self, key))
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
+
+class DistributionResult(db.Model):
+    __tablename__ = 'distribution_result'
+
+    id = Column(INTEGER(11), primary_key=True)
+    college_id = Column(INTEGER(11), nullable=False)
+    student_id = Column(ForeignKey('students.id'), nullable=False, index=True)
+    distribution_id = Column(INTEGER(11), nullable=False)
+    status = Column(String(255), nullable=False)
+
+    student = relationship('Student')
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = str(getattr(self, key))
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
 class ProjectChangeRecord(db.Model):
     __tablename__ = 'project_change_record'
 
     id = Column(INTEGER(11), primary_key=True)
     project_id = Column(ForeignKey('teach_reform_project.id'), nullable=False, index=True)
     reason = Column(String(255), nullable=False)
-    change_time = Column(DateTime, nullable=False)
+    change_time = Column(BIGINT(20), nullable=False)
     describe = Column(String(255), nullable=False)
 
     project = relationship('TeachReformProject')

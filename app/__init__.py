@@ -17,14 +17,25 @@ def create_app(config_name):
     db.init_app(app)
     cors.init_app(app)
 
+    #基础功能
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 
+    #校级管理员功能
     from .api_1_0.sadmin import sadmin as api_1_0_sadmin_blueprint
     app.register_blueprint(api_1_0_sadmin_blueprint, url_prefix='/api/v1.0/sadmin')
 
+    #院级管理员功能
+    from .api_1_0.cadmin import cadmin as api_1_0_cadmin_blueprint
+    app.register_blueprint(api_1_0_cadmin_blueprint, url_prefix='/api/v1.0/cadmin')
+
+    #教师功能
     from .api_1_0.normal import normal as api_1_0_normal_blueprint
     app.register_blueprint(api_1_0_normal_blueprint, url_prefix='/api/v1.0/normal')
+
+    #学生功能
+    from .api_1_0.student import student as api_1_0_student_blueprint
+    app.register_blueprint(api_1_0_student_blueprint, url_prefix='/api/v1.0/student')
 
     return app
 
