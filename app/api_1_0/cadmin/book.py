@@ -1,11 +1,8 @@
-from flask import jsonify, request, json
+from flask import jsonify, request
 from app.api_1_0.cadmin import cadmin
-from sqlalchemy import or_
-import json
-from werkzeug.security import generate_password_hash
 
 from app import db
-from app.models import TeacherInfo,Book,BookRank,College,TeacherBook
+from app.models import TeacherInfo,Book,BookRank,College
 from JSONHelper import JSONHelper
 
 '''
@@ -26,7 +23,7 @@ def getAllBookInfo():
                                  Book.isbn.label('isbn'), Book.press.label('press'), BookRank.rank_name.label('book_rank'),
                                  Book.status.label('status'), Book.submit_time.label('submit_time'))\
                           .join(BookRank, Book.rank_id == BookRank.id)\
-                          .filter(Book.college_id == collegeId,  Book.status != 1 ).all()
+                          .filter(Book.college_id == collegeId,  Book.status != '1' ).all()
     if book_info:
         return jsonify({
             'code': 20000,
@@ -71,6 +68,12 @@ def getDetailBookInfo():
             'reason': 'something was wrong!'
         })
 
+
+'''
+    
+'''
+
+
 '''
     修改图书信息
 '''
@@ -89,14 +92,14 @@ def changeSubmitInfo():
     style = request.json['style']
     rank_id = request.json['rank_id']
     project = request.json['project']
-    status = request.json['status']
+    #status = request.json['status']
     cover_path = request.json['cover_path']
     copy_path = request.json['copy_path']
     content_path = request.json['content_path']
     authors = request.json['authors']
 
     book = Book.query.filter_by(id = id).first()
-    book.id = id
+
     book.book_name = book_name
     book.book_number = book_number
     book.publish_year_month = publish_time
@@ -108,7 +111,7 @@ def changeSubmitInfo():
     book.style = style
     book.rank_id = rank_id
     book.source_project = project
-    book.status = status
+    #book.status = status
     book.cover_path = cover_path
     book.copyright_path = copy_path
     book.content_path = content_path
@@ -151,6 +154,43 @@ def changeBookStatus():
             'reason': '状态更新失败!'
         })
 
+'''
+    按状态搜索： 
+    status：状态：1本地编辑 2待审批 3立项 4中期检查 5结题 6存档  ps：0全部搜索
+'''
+@cadmin.route('/book/status_search', methods=['GET', 'POST'])
+def statusSearchBook():
+    cadminToken = request.json['token']  # token 是管理员的工号
+    cadminInfo = TeacherInfo.query.filter_by(number=cadminToken).first()
+    collegeId = cadminInfo.college_id
+
+    status = request.json['status']
+
+    book_infoes = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'),
+                                     Book.book_number.label('book_number'),
+                                     Book.isbn.label('isbn'), Book.press.label('press'),
+                                     BookRank.rank_name.label('book_rank'),
+                                     Book.status.label('status'), Book.submit_time.label('submit_time') ) \
+        .join(TeacherInfo, TeacherInfo.number == Book.submit_teacher) \
+        .join(BookRank, Book.rank_id == BookRank.id)
+    if status != '0':
+        book_infoes = book_infoes.filter(Book.college_id == collegeId,Book.status == status)
+    else:
+        book_infoes = book_infoes.filter(Book.college_id == collegeId,Book.status != '1')
+
+    book_info = book_infoes.order_by(Book.submit_time.desc()).all()
+    if book_info:
+        return jsonify({
+            'code': 20000,
+            'status': 'success',
+            'data': JSONHelper.jsonBQlist(book_info)
+        })
+    else:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '没有匹配项目!'
+        })
 
 '''
     搜索
@@ -164,45 +204,31 @@ def searchBookInfo():
 
     search_type = request.json['search_type']
     search_value = request.json['search_value']
-    if search_type == '' and search_value == '':
-        book_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'),
+
+    book_infoes = book_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'),
                                      Book.book_number.label('book_number'),
                                      Book.isbn.label('isbn'), Book.press.label('press'),
                                      BookRank.rank_name.label('book_rank'),
-                                     Book.status.label('status'), Book.submit_time.label('submit_time')) \
-            .join(BookRank, Book.rank_id == BookRank.id) \
-            .filter(Book.college_id == collegeId, Book.status != 1).all()
+                                     Book.status.label('status'), Book.submit_time.label('submit_time') ) \
+        .join(TeacherInfo, TeacherInfo.number == Book.submit_teacher) \
+        .join(BookRank, Book.rank_id == BookRank.id)
+
+    if search_type == '' and search_value == '':
+        book_info = book_infoes.filter(Book.college_id == collegeId, Book.status != '1').all()
 
     elif search_type == 'book_name':
-        book_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'),
-                                     Book.book_number.label('book_number'),
-                                     Book.isbn.label('isbn'), Book.press.label('press'),
-                                     BookRank.rank_name.label('book_rank'),
-                                     Book.status.label('status'), Book.submit_time.label('submit_time')) \
-            .join(BookRank, Book.rank_id == BookRank.id) \
-            .filter(Book.college_id == collegeId, Book.book_name.like('%' + search_value + '%'), Book.status != 1).all()
-    elif search_type == 'status':
-        book_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'),
-                                     Book.book_number.label('book_number'),
-                                     Book.isbn.label('isbn'), Book.press.label('press'),
-                                     BookRank.rank_name.label('book_rank'),
-                                     Book.status.label('status'), Book.submit_time.label('submit_time')) \
-            .join(BookRank, Book.rank_id == BookRank.id) \
-            .filter(Book.college_id == collegeId, Book.status.like('%' + search_value + '%'), Book.status != 1).all()
-    elif search_type == 'teacher_number':
-        book_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'),
-                                     Book.book_number.label('book_number'),
-                                     Book.isbn.label('isbn'), Book.press.label('press'),
-                                     BookRank.rank_name.label('book_rank'),
-                                     Book.status.label('status'), Book.submit_time.label('submit_time')) \
-            .join(BookRank, Book.rank_id == BookRank.id) \
-            .filter(Book.college_id == collegeId, Book.submit_teacher.like('%' + search_value + '%'), Book.status != 1).all()
+        book_info = book_infoes.filter(Book.college_id == collegeId, Book.book_name.like('%' + search_value + '%'), Book.status != '1') \
+            .order_by(Book.submit_time.desc()).all()
+    elif search_type == 'teacher_name':
+        book_info = book_infoes.filter(Book.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'), Book.status != '1') \
+            .order_by(Book.submit_time.desc()).all()
     elif search_type == '' and search_value != '':
         return jsonify({
             'code': 20001,
             'status': 'failed',
             'reason': 'please selected search type!'
         })
+
     if book_info:
         return jsonify({
             'code': 20000,

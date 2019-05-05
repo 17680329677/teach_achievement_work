@@ -30,7 +30,7 @@ def getAllInvigilateInfo():
                                  )\
         .join(TeacherInfo, InvigilateInfo.apply_teacher == TeacherInfo.number) \
         .join(SemesterInfo, SemesterInfo.id == InvigilateInfo.semester_id) \
-        .filter(InvigilateInfo.college_id == collegeId,  InvigilateInfo.status != 1 ).all()
+        .filter(InvigilateInfo.college_id == collegeId,  InvigilateInfo.status != '1' ).all()
     if invigilate:
         return jsonify({
             'code': 20000,
@@ -169,7 +169,7 @@ def statusSearchInvigilate():
         .join(TeacherInfo, InvigilateInfo.apply_teacher == TeacherInfo.number)\
         .join(SemesterInfo, SemesterInfo.id == InvigilateInfo.semester_id) \
 
-    if status != 0:
+    if status != '0':
         invigilates = invigilates.filter(InvigilateInfo.college_id == collegeId,  InvigilateInfo.status == status )
     else:
         invigilates = invigilates.filter(InvigilateInfo.college_id == collegeId)
@@ -214,17 +214,17 @@ def searchInvigilateInfo():
         .join(SemesterInfo, SemesterInfo.id == InvigilateInfo.semester_id) \
 
     if search_type == '' and search_value == '':
-        invigilates = invigilates.filter(InvigilateInfo.college_id == collegeId,InvigilateInfo.status != 1)
+        invigilates = invigilates.filter(InvigilateInfo.college_id == collegeId,InvigilateInfo.status != '1')
 
     elif search_type == 'invigilate_name':
         invigilates = invigilates \
             .filter(InvigilateInfo.college_id == collegeId,
-                    InvigilateInfo.subject.like('%' + search_value + '%'), InvigilateInfo.status != 1)
+                    InvigilateInfo.subject.like('%' + search_value + '%'), InvigilateInfo.status != '1')
 
     elif search_type == 'teacher_name':
         invigilates = invigilates \
             .filter(InvigilateInfo.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'),
-                    InvigilateInfo.status != 1)
+                    InvigilateInfo.status != '1')
 
     elif search_type == '' and search_value != '':
         return jsonify({

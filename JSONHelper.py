@@ -14,3 +14,13 @@ class JSONHelper():
                 jsondata.update(tdic)
             result.append(jsondata)
         return result
+
+    #.first() 查询
+    @staticmethod
+    def jsonBQfirst(bqfirst):
+        jsondata = {}
+        for i in range(bqfirst.__len__()):
+            tdic = {bqfirst._fields[i]: bqfirst[i]}
+            jsondata.update(tdic)
+
+        return jsondata

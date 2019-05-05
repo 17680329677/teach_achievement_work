@@ -1,8 +1,5 @@
-from flask import jsonify, request, json
+from flask import jsonify, request
 from app.api_1_0.cadmin import cadmin
-from sqlalchemy import or_
-import json
-from werkzeug.security import generate_password_hash
 
 from app import db
 from app.models import TeacherInfo,College,TeacherPaper,TeachReformPaper
@@ -30,7 +27,7 @@ def getAllReformPaperInfo():
                                  )\
         .join(TeacherPaper, TeacherPaper.paper_id == TeachReformPaper.id) \
         .join(TeacherInfo, TeacherInfo.number == TeacherPaper.teacher_number) \
-        .filter(TeachReformPaper.college_id == collegeId,  TeachReformPaper.status != 1 ).all()
+        .filter(TeachReformPaper.college_id == collegeId,  TeachReformPaper.status != '1' ).all()
     if teachReformPaper:
         return jsonify({
             'code': 20000,
@@ -104,9 +101,9 @@ def changeReformPaperSubmitInfo():
     publish_year_month = request.json['publish_year_month']
     journal_year = request.json['journal_year']
     journal_number = request.json['journal_number']
-    college_id = request.json['college_id']
+    #college_id = request.json['college_id']
     journal_volum = request.json['journal_volum']
-    status = request.json['status']
+    #status = request.json['status']
     source_project = request.json['source_project']
     cover_path = request.json['cover_path']
     content_path = request.json['content_path']
@@ -124,9 +121,9 @@ def changeReformPaperSubmitInfo():
     teachReformPaper.publish_year_month = publish_year_month
     teachReformPaper.journal_year = journal_year
     teachReformPaper.journal_number = journal_number
-    teachReformPaper.college_id = college_id
+    #teachReformPaper.college_id = college_id
     teachReformPaper.journal_volum = journal_volum
-    teachReformPaper.status = status
+    #teachReformPaper.status = status
     teachReformPaper.source_project = source_project
     teachReformPaper.cover_path = cover_path
     teachReformPaper.content_path = content_path
@@ -192,7 +189,7 @@ def statusSearchReformPaper():
                                     )\
         .join(TeacherPaper, TeacherPaper.paper_id == TeachReformPaper.id) \
         .join(TeacherInfo, TeacherInfo.number == TeacherPaper.teacher_number)
-    if status != 0:
+    if status != '0':
         teachReformPapers = teachReformPapers.filter(TeachReformPaper.college_id == collegeId,  TeachReformPaper.status == status )
     else:
         teachReformPapers = teachReformPapers.filter(TeachReformPaper.college_id == collegeId)
@@ -236,17 +233,17 @@ def searchReformPaperInfo():
 
     if search_type == '' and search_value == '':
         teachReforms = teachReforms.filter(TeachReformPaper.college_id == collegeId,
-                                          TeachReformPaper.status != 1)
+                                          TeachReformPaper.status != '1')
 
     elif search_type == 'reform_name':
         teachReforms = teachReforms \
             .filter(TeachReformPaper.college_id == collegeId,
-                    TeachReformPaper.paper_name.like('%' + search_value + '%'), TeachReformPaper.status != 1)
+                    TeachReformPaper.paper_name.like('%' + search_value + '%'), TeachReformPaper.status != '1')
 
     elif search_type == 'teacher_name':
         teachReforms = teachReforms \
             .filter(TeachReformPaper.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'),
-                    TeachReformPaper.status != 1)
+                    TeachReformPaper.status != '1')
 
     elif search_type == '' and search_value != '':
         return jsonify({

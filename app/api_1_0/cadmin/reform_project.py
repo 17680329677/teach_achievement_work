@@ -1,8 +1,5 @@
-from flask import jsonify, request, json
+from flask import jsonify, request
 from app.api_1_0.cadmin import cadmin
-from sqlalchemy import or_
-import json
-from werkzeug.security import generate_password_hash
 
 from app import db
 from app.models import TeacherInfo,College,TeachReformProject,TeacherProject,ProjectChildType,ProjectRank
@@ -32,7 +29,7 @@ def getAllTeachReformInfo():
         .join(TeacherProject, TeachReformProject.id == TeacherProject.project_id)\
         .join(TeacherInfo,TeacherInfo.number == TeacherProject.teacher_number) \
         .join(ProjectRank, ProjectRank.id == TeachReformProject.rank_id) \
-        .filter(TeachReformProject.college_id == collegeId,  TeachReformProject.status != 1 )\
+        .filter(TeachReformProject.college_id == collegeId,  TeachReformProject.status != '1' )\
         .order_by(TeachReformProject.submit_time.desc()).all()
     if teach_reform:
         return jsonify({
@@ -81,11 +78,12 @@ def getTeachReformInfo():
                                     TeachReformProject.grade.label('grade'),\
                                     TeachReformProject.funds.label('funds'),\
                                     TeachReformProject.submit_time.label('submit_time')   )\
+        .join(ProjectChildType, ProjectChildType.id == TeachReformProject.type_child_id)\
         .join(ProjectRank, ProjectRank.id == TeachReformProject.rank_id)\
-        .join(College, TeachReformProject == College.id)\
+        .join(College, TeachReformProject.college_id == College.id)\
         .join(TeacherProject, TeacherProject.project_id == TeachReformProject.id) \
         .join(TeacherInfo, TeacherInfo.number == TeacherProject.teacher_number) \
-        .filter(TeachReformProject.id == projectId).first()
+        .filter(TeachReformProject.id == projectId).all()
 
     if detail_info:
         return jsonify({
@@ -110,40 +108,40 @@ def changeSubmitReformInfo():
     project_number = request.json['project_number']
     type_child_id = request.json['type_child_id']
     rank_id = request.json['rank_id']
-    college_id = request.json['college_id']
+    #college_id = request.json['college_id']
     begin_year_month = request.json['begin_year_month']
     mid_check_year_month = request.json['mid_check_year_month']
     end_year_month = request.json['end_year_month']
     mid_check_rank = request.json['mid_check_rank']
     end_check_rank = request.json['end_check_rank']
     subject = request.json['subject']
-    status = request.json['status']
+    #status = request.json['status']
     host_student = request.json['host_student']
     participate_student = request.json['participate_student']
     remark = request.json['remark']
     grade = request.json['grade']
-    funds = request.json['funds']
-    submit_time = request.json['submit_time']
+    #funds = request.json['funds']
+    #submit_time = request.json['submit_time']
 
     teachReformProject = TeachReformProject.query.filter_by(id = id).first()
     teachReformProject.project_name = project_name
     teachReformProject.project_number = project_number
     teachReformProject.type_child_id = type_child_id
     teachReformProject.rank_id = rank_id
-    teachReformProject.college_id = college_id
+    #teachReformProject.college_id = college_id
     teachReformProject.begin_year_month = begin_year_month
     teachReformProject.mid_check_year_month = mid_check_year_month
     teachReformProject.end_year_month = end_year_month
     teachReformProject.mid_check_rank = mid_check_rank
     teachReformProject.end_check_rank = end_check_rank
     teachReformProject.subject = subject
-    teachReformProject.status = status
+    #teachReformProject.status = status
     teachReformProject.host_student = host_student
     teachReformProject.participate_student = participate_student
     teachReformProject.remark = remark
     teachReformProject.grade = grade
-    teachReformProject.funds = funds
-    teachReformProject.submit_time = submit_time
+    #teachReformProject.funds = funds
+    #teachReformProject.submit_time = submit_time
 
     db.session.commit()
     return jsonify({
@@ -206,7 +204,7 @@ def statusSearchTeachReform():
         .join(TeacherProject, TeachReformProject.id == TeacherProject.project_id)\
         .join(TeacherInfo,TeacherInfo.number == TeacherProject.teacher_number) \
         .join(ProjectRank, ProjectRank.id == TeachReformProject.rank_id)
-    if status != 0:
+    if status != '0':
         teach_reforms = teach_reforms.filter(TeachReformProject.college_id == collegeId,  TeachReformProject.status == status )
     else:
         teach_reforms = teach_reforms.filter(TeachReformProject.college_id == collegeId)
@@ -251,17 +249,17 @@ def searchTeachReformInfo():
         .join(ProjectRank, ProjectRank.id == TeachReformProject.rank_id)
 
     if search_type == '' and search_value == '':
-        teachReform = teachReforms.filter(TeachReformProject.college_id == collegeId, TeachReformProject.status != 1) \
+        teachReform = teachReforms.filter(TeachReformProject.college_id == collegeId, TeachReformProject.status != '1') \
             .order_by(TeachReformProject.submit_time.desc()).all()
 
     elif search_type == 'reform_name':
         teachReform = teachReforms\
-            .filter(TeachReformProject.college_id == collegeId, TeachReformProject.project_name.like('%' + search_value + '%'), TeachReformProject.status != 1) \
+            .filter(TeachReformProject.college_id == collegeId, TeachReformProject.project_name.like('%' + search_value + '%'), TeachReformProject.status != '1') \
             .order_by(TeachReformProject.submit_time.desc()).all()
 
     elif search_type == 'teacher_name':
         teachReform = teachReforms\
-            .filter(TeachReformProject.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'), TeachReformProject.status != 1) \
+            .filter(TeachReformProject.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'), TeachReformProject.status != '1') \
             .order_by(TeachReformProject.submit_time.desc()).all()
 
     elif search_type == '' and search_value != '':
@@ -270,6 +268,8 @@ def searchTeachReformInfo():
             'status': 'failed',
             'reason': 'please selected search type!'
         })
+
+
     if teachReform:
         return jsonify({
             'code': 20000,

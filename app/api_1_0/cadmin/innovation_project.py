@@ -31,7 +31,7 @@ def getAllInnovationInfo():
         .join(InnovationRank, InnovationRank.id == InnovationProject.rank_id) \
         .join(InnovationTeacher, InnovationTeacher.project_id == InnovationProject.id) \
         .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number) \
-        .filter(InnovationProject.college_id == collegeId,  InnovationProject.status != 1 ).all()
+        .filter(InnovationProject.college_id == collegeId,  InnovationProject.status != '1'  ).all()
     if innovation:
         return jsonify({
             'code': 20000,
@@ -183,26 +183,26 @@ def statusSearchInnovation():
 
     status = request.json['status']
 
-    innovations = db.session.query(   InnovationProject.id.label('id'),\
-                                    InnovationProject.project_name.label('project_name'),\
-                                    InnovationProject.project_number.label('project_number'),\
+    innovations = db.session.query(     InnovationProject.id.label('id'),\
+                                        InnovationProject.project_name.label('project_name'),\
+                                        InnovationProject.project_number.label('project_number'), \
+                                        InnovationProject.status.label('status'), \
 
+                                        InnovationRank.rank_name.label('rank_name'),\
+                                        TeacherInfo.name.label('teacher_name'),\
 
-                                    InnovationRank.rank_name.label('rank_name'),\
-                                    TeacherInfo.name.label('teacher_name'),\
-
-                                    InnovationProject.end_check_rank.label('end_check_rank'),\
-                                    InnovationProject.submit_time.label('submit_time'),\
+                                        InnovationProject.end_check_rank.label('end_check_rank'),\
+                                        InnovationProject.submit_time.label('submit_time'),\
                                  )\
         .join(InnovationRank, InnovationRank.id == InnovationProject.rank_id) \
         .join(InnovationTeacher, InnovationTeacher.project_id == InnovationProject.id) \
         .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number)
-    if status != 0:
+    if status != '0':
         innovations = innovations.filter(InnovationProject.college_id == collegeId,  InnovationProject.status == status )
     else:
         innovations = innovations.filter(InnovationProject.college_id == collegeId)
 
-        innovation = innovations.order_by(InnovationProject.submit_time.desc()).all()
+    innovation = innovations.order_by(InnovationProject.submit_time.desc()).all()
     if innovation:
         return jsonify({
             'code': 20000,
@@ -245,18 +245,17 @@ def searchInovationInfo():
         .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number)
 
     if search_type == '' and search_value == '':
-        innovations = innovations.filter(InnovationProject.college_id == collegeId,
-                                           InnovationProject.status != 1)
+        innovations = innovations.filter(InnovationProject.college_id == collegeId,InnovationProject.status != '1')
 
     elif search_type == 'project_name':
         innovations = innovations \
             .filter(InnovationProject.college_id == collegeId,
-                    InnovationProject.project_name.like('%' + search_value + '%'), InnovationProject.status != 1)
+                    InnovationProject.project_name.like('%' + search_value + '%'), InnovationProject.status != '1')
 
     elif search_type == 'teacher_name':
         innovations = innovations \
             .filter(InnovationProject.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'),
-                    InnovationProject.status != 1)
+                    InnovationProject.status != '1')
 
     elif search_type == '' and search_value != '':
         return jsonify({

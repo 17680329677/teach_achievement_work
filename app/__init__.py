@@ -21,6 +21,10 @@ def create_app(config_name):
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 
+    #静态文件
+    #from . import static
+    #app.register_blueprint(static, url_prefix='/static')
+
     #校级管理员功能
     from .api_1_0.sadmin import sadmin as api_1_0_sadmin_blueprint
     app.register_blueprint(api_1_0_sadmin_blueprint, url_prefix='/api/v1.0/sadmin')

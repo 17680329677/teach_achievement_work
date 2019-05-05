@@ -59,41 +59,17 @@ def getDetailBookInfo():
         })
 
 '''
-    提交书籍信息 将status 改为 已提交
+    状态更变  [  状态（展示）普通用户角色显示：(1未提交；2已提交；3已存档 ；)    管理员角色显示：(2待审批；3已存档；)   ]
 '''
-@normal.route('/book/changestatus/submit', methods=['GET', 'POST'])
-def changeToSubmit():
-    book_info = Book.query.filter_by(id=request.json['id']).first()
-    if book_info:
-        try:
-            book_info.status = '已提交'
-            db.session.commit()
-            return jsonify({
-                'code': 20000,
-                'status': 'success'
-            })
-        except:
-            return jsonify({
-                'code': 20001,
-                'status': 'failed',
-                'reason': '提交失败!'
-            })
-    else:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '提交失败!'
-        })
 
-'''
-    教师主动撤销书籍提交请求 将status 改为 未提交 by Book.id
-'''
-@normal.route('/book/changestatus/recallsubmit', methods=['GET', 'POST'])
-def recallSubmit():
-    book_info = Book.query.filter_by(id=request.json['id']).first()
+@normal.route('/book/changestatus', methods=['GET', 'POST'])
+def changeBookStatus():
+    id = request.json['id']
+    status = request.json['status']
+    book_info = Book.query.filter_by(id = id).first()
     if book_info:
         try:
-            book_info.status = '未提交'
+            book_info.status = status
             db.session.commit()
             return jsonify({
                 'code': 20000,
@@ -103,13 +79,13 @@ def recallSubmit():
             return jsonify({
                 'code': 20001,
                 'status': 'failed',
-                'reason': '撤销提交失败!'
+                'reason': '状态更新成功!'
             })
     else:
         return jsonify({
             'code': 20001,
             'status': 'failed',
-            'reason': '撤销提交失败!'
+            'reason': '状态更新失败!'
         })
 
 '''
@@ -118,7 +94,7 @@ def recallSubmit():
 @normal.route('/book/delete', methods=['GET', 'POST'])
 def deleteBookInfo():
     book_info = Book.query.filter_by(id=request.json['id']).first()
-    if book_info:
+    if book_info and book_info.status == '1':
         try:
             db.session.delete(book_info)
             db.session.commit()
@@ -136,8 +112,72 @@ def deleteBookInfo():
         return jsonify({
             'code': 20001,
             'status': 'failed',
-            'reason': '删除失败!'
+            'reason': '删除失败，书籍已提交!'
         })
+
+
+'''
+    修改出版教材信息
+'''
+
+@normal.route('/book/submitInfo/change', methods=['GET', 'POST'])
+def changeInvigilateSubmitInfo():
+    id = request.json['id']
+    book_name = request.json['book_name']
+    book_number = request.json['book_number']
+    publish_time = request.json['publish_time']
+    pages = request.json['pages']
+    words = request.json['words']
+    isbn = request.json['isbn']
+    press = request.json['press']
+    version = request.json['version']
+    style = request.json['style']
+    rank_id = request.json['rank_id']
+    project = request.json['project']
+    cover_path = request.json['cover_path']
+    copy_path = request.json['copy_path']
+    content_path = request.json['content_path']
+    authors = request.json['authors']
+
+    book = Book.query.filter_by(id = id).first()
+
+    if book:
+        if book.status == '1':
+            book.book_name = book_name
+            book.book_number = book_number
+            book.publish_year_month = publish_time
+            book.pages = pages
+            book.words = words
+            book.isbn = isbn
+            book.press = press
+            book.version = version
+            book.style = style
+            book.rank_id = rank_id
+            book.source_project = project
+            book.cover_path = cover_path
+            book.copyright_path = copy_path
+            book.content_path = content_path
+            book.participate_teacher = authors
+        else:
+            return jsonify({
+                'code': 20001,
+                'status': 'failed',
+                'reason': '教材信息已提交或存档不能修改'
+            })
+    else:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '书籍不存在'
+        })
+
+    db.session.commit()
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'reason': '修改成功'
+    })
+
 
 '''
 根据书籍名称或者书籍状态查询书籍信息 by number
