@@ -1,6 +1,6 @@
 from flask import jsonify, request, json
 from app.api_1_0.normal import normal
-from app.models import College, TeacherInfo, Book, BookRank
+from app.models import College, TeacherInfo, Book, BookRank,TeacherBook
 from app import db
 from sqlalchemy import or_, and_
 from JSONHelper import JSONHelper
@@ -59,7 +59,7 @@ def getDetailBookInfo():
         })
 
 '''
-    状态更变  [  状态（展示）普通用户角色显示：(1未提交；2已提交；3已存档 ；)    管理员角色显示：(2待审批；3已存档；)   ]
+    状态更变  [  状态（展示）普通用户角色显示：(1未提交；2已提交；3已存档 ；)    教师角色显示：(2待审批；3已存档；)   ]
 '''
 
 @normal.route('/book/changestatus', methods=['GET', 'POST'])
@@ -117,15 +117,135 @@ def deleteBookInfo():
 
 
 '''
+    添加 出版教材信息
+'''
+@normal.route('/book/create', methods=['GET', 'POST'])
+def teacherBookCreate():
+    teacherToken = request.json['token']  # token 是教师的工号
+    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
+    collegeId = cadminInfo.college_id
+
+    createError = 0
+    errorMsg = ''
+
+    if not collegeId:
+        createError = 1
+        errorMsg = '您的账号信息没有对应的学院'
+
+    #添加book表信息，返回id后添加teacher_book
+    #1.rank_id 必须在book_rank中有对应才可以
+    #2.teacher_book必须有order（第几作者）
+    order = request.json['order'] #不为空
+    book_name = request.json['book_name'] #不为空
+    book_number = request.json['book_number'] #不为空
+    publish_year_month = request.json['publish_time'] #不为空
+    pages = request.json['pages']
+    words = request.json['words']
+    isbn = request.json['isbn']
+    press = request.json['press']
+    version = request.json['version'] #不为空
+    style = request.json['style']
+    rank_id = request.json['rank_id'] #不为空，有对应
+    collegeId = collegeId  #不为空
+    project = request.json['project']
+    status = '1'
+    cover_path = request.json['cover_path']
+    copy_path = request.json['copy_path']
+    content_path = request.json['content_path']
+    submit_teacher = teacherToken  #不为空
+    participate_teacher = request.json['participate_teacher']
+
+    if not order:
+        createError = 1
+        errorMsg = '没有填写教材是第几作者'
+    if not book_name:
+        createError = 1
+        errorMsg = '书名为空'
+    if not book_number:
+        createError = 1
+        errorMsg = '教材编号为空'
+    if not publish_year_month:
+        createError = 1
+        errorMsg = '出版年月为空'
+    if not version:
+        createError = 1
+        errorMsg = '教材版本为空'
+
+    bookRank = BookRank.query.filter_by(id = rank_id).first()
+    if not bookRank:
+        createError = 1
+        errorMsg = '您提交的教材级别id，在教材级别配置中没有对应'
+    if not rank_id:
+        createError = 1
+        errorMsg = '教材级别为空'
+
+    if createError:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': errorMsg
+        })
+
+    #添加book信息
+    book = Book()
+    book.book_name = book_name
+    book.book_number = book_number
+    book.publish_year_month = publish_year_month
+    book.pages = pages
+    book.words = words
+    book.isbn = isbn
+    book.press = press
+    book.version = version
+    book.style = style
+    book.rank_id = rank_id
+    book.college_id = collegeId
+    book.source_project = project
+    book.status = status
+    book.cover_path = cover_path
+    book.copyright_path = copy_path
+    book.content_path = content_path
+    book.participate_teacher = participate_teacher
+    book.submit_teacher = submit_teacher
+    db.session.add(book)
+    db.session.commit()
+
+    #添加teacher_book 信息
+    bookId = book.id
+    newTeacherBook = TeacherBook()
+    newTeacherBook.teacher_number = submit_teacher
+    newTeacherBook.book_id = bookId
+    newTeacherBook.order = order
+    db.session.add(newTeacherBook)
+    db.session.commit()
+
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'reason': '添加教材成功'
+    })
+
+
+'''
     修改出版教材信息
 '''
-
 @normal.route('/book/submitInfo/change', methods=['GET', 'POST'])
-def changeInvigilateSubmitInfo():
+def changeBookSubmitInfo():
+    teacherToken = request.json['token']  # token 是教师的工号
+    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
+    collegeId = cadminInfo.college_id
+
+    createError = 0
+    errorMsg = ''
+
+    if not collegeId:
+        createError = 1
+        errorMsg = '您的账号信息没有对应的学院'
+
     id = request.json['id']
+    order = request.json['order']
     book_name = request.json['book_name']
     book_number = request.json['book_number']
-    publish_time = request.json['publish_time']
+    publish_year_month = request.json['publish_time']
     pages = request.json['pages']
     words = request.json['words']
     isbn = request.json['isbn']
@@ -141,11 +261,42 @@ def changeInvigilateSubmitInfo():
 
     book = Book.query.filter_by(id = id).first()
 
+    if not order:
+        createError = 1
+        errorMsg = '没有填写教材是第几作者'
+    if not book_name:
+        createError = 1
+        errorMsg = '书名为空'
+    if not book_number:
+        createError = 1
+        errorMsg = '教材编号为空'
+    if not publish_year_month:
+        createError = 1
+        errorMsg = '出版年月为空'
+    if not version:
+        createError = 1
+        errorMsg = '教材版本为空'
+
+    bookRank = BookRank.query.filter_by(id = rank_id).first()
+    if not bookRank:
+        createError = 1
+        errorMsg = '您提交的教材级别id，在教材级别配置中没有对应'
+    if not rank_id:
+        createError = 1
+        errorMsg = '教材级别为空'
+
+    if createError:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': errorMsg
+        })
+
     if book:
         if book.status == '1':
             book.book_name = book_name
             book.book_number = book_number
-            book.publish_year_month = publish_time
+            book.publish_year_month = publish_year_month
             book.pages = pages
             book.words = words
             book.isbn = isbn
@@ -158,6 +309,13 @@ def changeInvigilateSubmitInfo():
             book.copyright_path = copy_path
             book.content_path = content_path
             book.participate_teacher = authors
+
+            teacherBook = TeacherBook.query.filter_by().first()
+            teacherBook.order = order
+            db.session.add(teacherBook)
+
+            db.session.commit()
+
         else:
             return jsonify({
                 'code': 20001,
