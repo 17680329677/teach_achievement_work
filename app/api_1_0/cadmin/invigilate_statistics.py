@@ -134,7 +134,7 @@ def getInvigilateStatisticsTimeSectionInfo():
 
 
 '''
-    获得本教师详细监考历史（统计教师再apply_teacher or participate_teacher 出现过 就可以显示）
+    获得本教师详细监考历史（统计教师再apply_teacher or participate_teacher 出现过 就可以显示） 并且是已经审核通过的
 '''
 @cadmin.route('/invigilate_statistics/detail', methods=['GET', 'POST'])
 def getInvigilateStatisticsDetailInfo():
@@ -156,7 +156,7 @@ def getInvigilateStatisticsDetailInfo():
                     ) \
         .join(College, InvigilateInfo.college_id == College.id) \
         .join(TeacherInfo, InvigilateInfo.apply_teacher == TeacherInfo.number) \
-        .filter( InvigilateInfo.participate_teacher.like('%' + teacher_number + '%') ).all()
+        .filter( InvigilateInfo.participate_teacher.like('%' + teacher_number + '%'), InvigilateInfo.status == '3' ).all()
 
     if detail_info:
         return jsonify({

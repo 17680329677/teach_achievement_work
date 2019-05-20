@@ -10,7 +10,7 @@ from JSONHelper import JSONHelper
 '''
 
 '''
-    获得本学院 论文总体信息 by token 并且状态 status ！= 1
+    获得个人 论文总体信息 by token 并且状态 status ！= 1
 '''
 @normal.route('/reform_paper/index', methods=['GET', 'POST'])
 def getAllReformPaperInfo():
@@ -27,7 +27,7 @@ def getAllReformPaperInfo():
                                  )\
         .join(TeacherPaper, TeacherPaper.paper_id == TeachReformPaper.id) \
         .join(TeacherInfo, TeacherInfo.number == TeacherPaper.teacher_number) \
-        .filter(TeachReformPaper.college_id == collegeId,  TeachReformPaper.status != '1' ).all()
+        .filter(TeacherPaper.teacher_number == teacherToken).all()
     if teachReformPaper:
         return jsonify({
             'code': 20000,
@@ -106,6 +106,7 @@ def teacherReformPaperCreate():
         errorMsg = '您的账号信息没有对应的学院'
 
     order = request.json['order'] #不为空
+
     paper_name = request.json['paper_name'] #不为空
     paper_number = request.json['paper_number'] #不为空
     journal_name = request.json['journal_name'] #不为空
@@ -256,7 +257,7 @@ def changeReformPaperSubmitInfo():
     return jsonify({
         'code': 20000,
         'status': 'success',
-        'data': ''
+        'reason': '修改信息成功'
     })
 
 '''
@@ -296,8 +297,6 @@ def reformPaperChangeStatus():
 @normal.route('/reform_paper/status_search', methods=['GET', 'POST'])
 def statusSearchReformPaper():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     status = request.json['status']
 
@@ -311,9 +310,9 @@ def statusSearchReformPaper():
         .join(TeacherPaper, TeacherPaper.paper_id == TeachReformPaper.id) \
         .join(TeacherInfo, TeacherInfo.number == TeacherPaper.teacher_number)
     if status != '0':
-        teachReformPapers = teachReformPapers.filter(TeachReformPaper.college_id == collegeId,  TeachReformPaper.status == status )
+        teachReformPapers = teachReformPapers.filter(TeacherPaper.teacher_number == teacherToken,  TeachReformPaper.status == status )
     else:
-        teachReformPapers = teachReformPapers.filter(TeachReformPaper.college_id == collegeId)
+        teachReformPapers = teachReformPapers.filter(TeacherPaper.teacher_number == teacherToken)
 
     teachReformPaper = teachReformPapers.order_by(TeachReformPaper.publish_year_month.desc()).all()
     if teachReformPaper:
@@ -337,8 +336,6 @@ def statusSearchReformPaper():
 @normal.route('/reform_paper/search', methods=['GET', 'POST'])
 def searchReformPaperInfo():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     search_type = request.json['search_type']
     search_value = request.json['search_value']
@@ -353,18 +350,16 @@ def searchReformPaperInfo():
         .join(TeacherInfo, TeacherInfo.number == TeacherPaper.teacher_number)
 
     if search_type == '' and search_value == '':
-        teachReforms = teachReforms.filter(TeachReformPaper.college_id == collegeId,
-                                          TeachReformPaper.status != '1')
+        teachReforms = teachReforms.filter(TeacherPaper.teacher_number == teacherToken )
 
     elif search_type == 'reform_name':
         teachReforms = teachReforms \
-            .filter(TeachReformPaper.college_id == collegeId,
-                    TeachReformPaper.paper_name.like('%' + search_value + '%'), TeachReformPaper.status != '1')
+            .filter(TeacherPaper.teacher_number == teacherToken,
+                    TeachReformPaper.paper_name.like('%' + search_value + '%') )
 
     elif search_type == 'teacher_name':
         teachReforms = teachReforms \
-            .filter(TeachReformPaper.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'),
-                    TeachReformPaper.status != '1')
+            .filter(TeacherPaper.teacher_number == teacherToken, TeacherInfo.name.like('%' + search_value + '%') )
 
     elif search_type == '' and search_value != '':
         return jsonify({

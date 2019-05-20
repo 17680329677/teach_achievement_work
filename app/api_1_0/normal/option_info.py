@@ -5,7 +5,7 @@ import json
 from werkzeug.security import generate_password_hash
 
 from app import db
-from app.models import Department,TeacherInfo,College,TeacherTitle,BookRank,ProjectRank,ProjectType,ProjectChildType,InnovationRank
+from app.models import Department,TeacherInfo,College,TeacherTitle,BookRank,ProjectRank,ProjectType,ProjectChildType,InnovationRank,SemesterInfo
 from JSONHelper import JSONHelper
 
 '''
@@ -16,10 +16,12 @@ from JSONHelper import JSONHelper
         4.学院教师信息【id+name+department_id】
         5.教研室教师信息【id+name+department_id】
         6.出版教材等级 BookRank
+        
         7.教改项目等级 ProjectRank
         8.教改项目类型 ProjectType
         9.教改项目子类型 ProjectChildType  
         10.大创等级 InnovationRank
+        11.学期信息 SemesterInfo
 '''
 
 
@@ -217,6 +219,25 @@ def getInnovationRankOptions():
             'reason': '选项信息为空'
         })
     option = InnovationRank.to_json(options)
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'data': option
+    })
+
+'''
+    11.学期信息 SemesterInfo
+'''
+@normal.route('/semester_info_options/get',methods=['GET','POST'])
+def getSemesterInfoOptions():
+    options = SemesterInfo.query.all()
+    if not options:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '选项信息为空'
+        })
+    option = SemesterInfo.to_json(options)
     return jsonify({
         'code': 20000,
         'status': 'success',

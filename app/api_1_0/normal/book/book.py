@@ -34,16 +34,19 @@ def getAllBookInfo():
 @normal.route('/book/detail', methods=['GET', 'POST'])
 def getDetailBookInfo():
     detail_info = db.session.query(Book.id.label('id'), Book.book_name.label('book_name'), Book.book_number.label('book_number'),
+                                   TeacherBook.order.label('order'),
                                    Book.publish_year_month.label('publish_time'), Book.pages.label('pages'), Book.words.label('words'),
                                    Book.isbn.label('isbn'), Book.press.label('press'), Book.version.label('version'), Book.style.label('style'),
+                                   Book.rank_id.label('rank_id'),
                                    BookRank.rank_name.label('rank'), College.name.label('college'), Book.source_project.label('project'),
                                    Book.status.label('status'), Book.cover_path.label('cover_path'), Book.copyright_path.label('copy_path'),
                                    Book.content_path.label('content_path'), Book.participate_teacher.label('authors'),
-                                   TeacherInfo.name.label('teacher_name'), Book.submit_time.label('submit_time'))\
-                            .join(BookRank, Book.rank_id == BookRank.id)\
-                            .join(College, Book.college_id == College.id)\
-                            .join(TeacherInfo, Book.submit_teacher == TeacherInfo.number)\
-                            .filter(Book.id == request.json['id']).all()
+                                   TeacherInfo.name.label('teacher_name'), Book.submit_time.label('submit_time')) \
+        .join(TeacherBook, TeacherBook.book_id == Book.id) \
+        .join(BookRank, Book.rank_id == BookRank.id)\
+        .join(College, Book.college_id == College.id)\
+        .join(TeacherInfo, Book.submit_teacher == TeacherInfo.number)\
+        .filter(Book.id == request.json['id']).all()
 
     if detail_info:
         return jsonify({
@@ -153,7 +156,7 @@ def teacherBookCreate():
     copy_path = request.json['copy_path']
     content_path = request.json['content_path']
     submit_teacher = teacherToken  #不为空
-    participate_teacher = request.json['participate_teacher']
+    participate_teacher = request.json['authors']
 
     if not order:
         createError = 1
@@ -373,7 +376,7 @@ def searchBookInfo():
         return jsonify({
             'code': 20001,
             'status': 'failed',
-            'reason': 'please selected search type!'
+            'reason': '请选择类别'
         })
     if book_info:
         return jsonify({
@@ -385,5 +388,5 @@ def searchBookInfo():
         return jsonify({
             'code': 20001,
             'status': 'failed',
-            'reason': 'Found nothing!'
+            'reason': '没有匹配项'
         })

@@ -16,9 +16,6 @@ import time
 @normal.route('/innovation/index', methods=['GET', 'POST'])
 def getAllInnovationInfo():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
-
 
     innovation = db.session.query(  InnovationProject.id.label('id'),\
                                     InnovationProject.project_name.label('project_name'),\
@@ -32,7 +29,7 @@ def getAllInnovationInfo():
         .join(InnovationRank, InnovationRank.id == InnovationProject.rank_id) \
         .join(InnovationTeacher, InnovationTeacher.project_id == InnovationProject.id) \
         .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number) \
-        .filter(InnovationProject.college_id == collegeId,  InnovationProject.status != '1'  ).all()
+        .filter(InnovationTeacher.teacher_number == teacherToken ).all()
     if innovation:
         return jsonify({
             'code': 20000,
@@ -63,6 +60,8 @@ def getDetailInnovationInfo():
                                     InnovationProject.project_name.label('project_name'), \
                                     InnovationProject.project_number.label('project_number'), \
                                     InnovationProject.rank_id.label('rank_id'), \
+                                    InnovationRank.rank_name.label('rank_name'),\
+
 
                                     College.name.label('college_name'), \
 
@@ -80,7 +79,8 @@ def getDetailInnovationInfo():
                                 ) \
         .join(College, InnovationProject.college_id == College.id) \
         .join(InnovationTeacher, InnovationTeacher.project_id == InnovationProject.id)\
-        .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number)\
+        .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number) \
+        .join(InnovationRank, InnovationProject.rank_id == InnovationRank.id) \
         .filter(InnovationProject.id == innovationId).all()
 
     if detail_info:
@@ -138,7 +138,7 @@ def innovationCreate():
         createError = 1
         errorMsg = '大创编号不能为空'
 
-    rankId = InnovationRank.query.filter_by(id = rank_id).fitst()
+    rankId = InnovationRank.query.filter_by(id = rank_id).first()
     if not rankId:
         createError = 1
         errorMsg = '大创项目等级id没有对应匹配'
@@ -185,10 +185,6 @@ def innovationCreate():
     db.session.add(innovationTeacher)
     db.session.commit()
 
-
-
-
-
     return jsonify({
         'code': 20000,
         'status': 'success',
@@ -222,7 +218,7 @@ def changeInnovationSubmitInfo():
     mid_check_rank = request.json['mid_check_rank']
     end_check_rank = request.json['end_check_rank']
     subject = request.json['subject']
-    status = request.json['status']
+    #status = request.json['status']
     host_student = request.json['host_student']
     participant_student = request.json['participant_student']
     remark = request.json['remark']
@@ -234,7 +230,7 @@ def changeInnovationSubmitInfo():
         createError = 1
         errorMsg = '大创编号不能为空'
 
-    rankId = InnovationRank.query.filter_by(id = rank_id).fitst()
+    rankId = InnovationRank.query.filter_by(id = rank_id).first()
     if not rankId:
         createError = 1
         errorMsg = '大创项目等级id没有对应匹配'
@@ -266,7 +262,7 @@ def changeInnovationSubmitInfo():
     innovationProject.mid_check_rank = mid_check_rank
     innovationProject.end_check_rank = end_check_rank
     innovationProject.subject = subject
-    innovationProject.status = status
+    #innovationProject.status = status
     innovationProject.host_student = host_student
     innovationProject.participant_student = participant_student
     innovationProject.remark = remark
@@ -275,7 +271,7 @@ def changeInnovationSubmitInfo():
     return jsonify({
         'code': 20000,
         'status': 'success',
-        'data': ''
+        'reason': '修改成功'
     })
 
 '''
@@ -316,8 +312,6 @@ def changeInnovationStatus():
 @normal.route('/innovation/status_search', methods=['GET', 'POST'])
 def statusSearchInnovation():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     status = request.json['status']
 
@@ -336,9 +330,9 @@ def statusSearchInnovation():
         .join(InnovationTeacher, InnovationTeacher.project_id == InnovationProject.id) \
         .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number)
     if status != '0':
-        innovations = innovations.filter(InnovationProject.college_id == collegeId,  InnovationProject.status == status )
+        innovations = innovations.filter(InnovationTeacher.teacher_number == teacherToken,  InnovationProject.status == status )
     else:
-        innovations = innovations.filter(InnovationProject.college_id == collegeId)
+        innovations = innovations.filter(InnovationTeacher.teacher_number == teacherToken)
 
     innovation = innovations.order_by(InnovationProject.submit_time.desc()).all()
     if innovation:
@@ -362,8 +356,6 @@ def statusSearchInnovation():
 @normal.route('/innovation/search', methods=['GET', 'POST'])
 def searchInovationInfo():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     search_type = request.json['search_type']
     search_value = request.json['search_value']
@@ -383,17 +375,16 @@ def searchInovationInfo():
         .join(TeacherInfo, InnovationTeacher.teacher_number == TeacherInfo.number)
 
     if search_type == '' and search_value == '':
-        innovations = innovations.filter(InnovationProject.college_id == collegeId,InnovationProject.status != '1')
+        innovations = innovations.filter(InnovationTeacher.teacher_number == teacherToken )
 
     elif search_type == 'project_name':
         innovations = innovations \
-            .filter(InnovationProject.college_id == collegeId,
-                    InnovationProject.project_name.like('%' + search_value + '%'), InnovationProject.status != '1')
+            .filter(InnovationTeacher.teacher_number == teacherToken,
+                    InnovationProject.project_name.like('%' + search_value + '%') )
 
     elif search_type == 'teacher_name':
         innovations = innovations \
-            .filter(InnovationProject.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'),
-                    InnovationProject.status != '1')
+            .filter(InnovationTeacher.teacher_number == teacherToken, TeacherInfo.name.like('%' + search_value + '%') )
 
     elif search_type == '' and search_value != '':
         return jsonify({

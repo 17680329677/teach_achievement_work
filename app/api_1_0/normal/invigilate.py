@@ -16,8 +16,6 @@ import time
 @normal.route('/invigilate/index', methods=['GET', 'POST'])
 def getAllInvigilateInfo():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
 
     invigilate = db.session.query(  InvigilateInfo.id.label('id'),\
@@ -31,7 +29,7 @@ def getAllInvigilateInfo():
                                  )\
         .join(TeacherInfo, InvigilateInfo.apply_teacher == TeacherInfo.number) \
         .join(SemesterInfo, SemesterInfo.id == InvigilateInfo.semester_id) \
-        .filter(InvigilateInfo.college_id == collegeId,  InvigilateInfo.status != '1' ).all()
+        .filter(InvigilateInfo.apply_teacher == teacherToken ).all()
     if invigilate:
         return jsonify({
             'code': 20000,
@@ -59,6 +57,7 @@ def getDetailInvigilateInfo():
                                     TeacherInfo.name.label('apply_teacher_name'), \
                                     InvigilateInfo.subject.label('subject'), \
                                     InvigilateInfo.semester_id.label('semester_id'), \
+                                    SemesterInfo.semester_name.label('semester_name'),\
                                     InvigilateInfo._class.label('_class'), \
                                     InvigilateInfo.college_id.label('college_id'), \
                                     InvigilateInfo.exam_time.label('exam_time'), \
@@ -67,7 +66,7 @@ def getDetailInvigilateInfo():
                                     InvigilateInfo.submit_time.label('submit_time'), \
                                     InvigilateInfo.status.label('status'), \
                                     ) \
-        .join(College, InvigilateInfo.college_id == College.id) \
+        .join(SemesterInfo, SemesterInfo.id == InvigilateInfo.semester_id) \
         .join(TeacherInfo, InvigilateInfo.apply_teacher == TeacherInfo.number) \
         .filter(InvigilateInfo.id == invigilateId).all()
 
@@ -224,9 +223,8 @@ def changeInvigilateSubmitInfo():
     })
 
 '''
-    状态更变  [  状态（展示）普通用户角色显示：(1未提交；2已提交；3已存档 ；)    教师角色显示：(2待审批；3已存档；)   ]
+    状态更变  [  状态（展示）普通用户角色显示：(1未提交；2已提交；3已存档；)    教师角色显示：(2待审批；3已存档；)   ]
 '''
-
 @normal.route('/invigilate/changestatus', methods=['GET', 'POST'])
 def changeInvigilateStatus():
     id = request.json['id']
@@ -261,12 +259,10 @@ def changeInvigilateStatus():
 @normal.route('/invigilate/status_search', methods=['GET', 'POST'])
 def statusSearchInvigilate():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     status = request.json['status']
 
-    invigilates = db.session.query(  InvigilateInfo.id.label('id'),\
+    invigilates = db.session.query( InvigilateInfo.id.label('id'),\
                                     InvigilateInfo.apply_teacher.label('apply_teacher_number'), \
                                     TeacherInfo.name.label('apply_teacher_name'),\
                                     InvigilateInfo.subject.label('subject'), \
@@ -279,9 +275,9 @@ def statusSearchInvigilate():
         .join(SemesterInfo, SemesterInfo.id == InvigilateInfo.semester_id) \
 
     if status != '0':
-        invigilates = invigilates.filter(InvigilateInfo.college_id == collegeId,  InvigilateInfo.status == status )
+        invigilates = invigilates.filter(InvigilateInfo.apply_teacher == teacherToken,  InvigilateInfo.status == status )
     else:
-        invigilates = invigilates.filter(InvigilateInfo.college_id == collegeId)
+        invigilates = invigilates.filter(InvigilateInfo.apply_teacher == teacherToken)
 
     invigilate = invigilates.order_by(InvigilateInfo.submit_time.desc()).all()
     if invigilate:
@@ -305,8 +301,6 @@ def statusSearchInvigilate():
 @normal.route('/invigilate/search', methods=['GET', 'POST'])
 def searchInvigilateInfo():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     search_type = request.json['search_type']
     search_value = request.json['search_value']
@@ -323,17 +317,15 @@ def searchInvigilateInfo():
         .join(SemesterInfo, SemesterInfo.id == InvigilateInfo.semester_id) \
 
     if search_type == '' and search_value == '':
-        invigilates = invigilates.filter(InvigilateInfo.college_id == collegeId,InvigilateInfo.status != '1')
+        invigilates = invigilates.filter(InvigilateInfo.apply_teacher == teacherToken)
 
     elif search_type == 'invigilate_name':
         invigilates = invigilates \
-            .filter(InvigilateInfo.college_id == collegeId,
-                    InvigilateInfo.subject.like('%' + search_value + '%'), InvigilateInfo.status != '1')
+            .filter(InvigilateInfo.apply_teacher == teacherToken,InvigilateInfo.subject.like('%' + search_value + '%')  )
 
     elif search_type == 'teacher_name':
         invigilates = invigilates \
-            .filter(InvigilateInfo.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'),
-                    InvigilateInfo.status != '1')
+            .filter(InvigilateInfo.apply_teacher == teacherToken, TeacherInfo.name.like('%' + search_value + '%')  )
 
     elif search_type == '' and search_value != '':
         return jsonify({

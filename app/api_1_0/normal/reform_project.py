@@ -16,8 +16,6 @@ import time
 @normal.route('/teach_reform/index', methods=['GET', 'POST'])
 def getAllTeachReformInfo():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     teach_reform = db.session.query(TeachReformProject.id.label('id'), \
                                     TeachReformProject.project_name.label('project_name'), \
@@ -30,7 +28,7 @@ def getAllTeachReformInfo():
         .join(TeacherProject, TeachReformProject.id == TeacherProject.project_id)\
         .join(TeacherInfo,TeacherInfo.number == TeacherProject.teacher_number) \
         .join(ProjectRank, ProjectRank.id == TeachReformProject.rank_id) \
-        .filter(TeachReformProject.college_id == collegeId,  TeachReformProject.status != '1' )\
+        .filter(TeacherProject.teacher_number == teacherToken)\
         .order_by(TeachReformProject.submit_time.desc()).all()
     if teach_reform:
         return jsonify({
@@ -117,10 +115,11 @@ def teacherReformProjectCreate():
         errorMsg = '您的账号信息没有对应的学院'
 
     participateType = request.json['participate_type'] #不是空，参与类型（负责人、参与人）
+
     project_name = request.json['project_name'] #不是空
     project_number = request.json['project_number'] #不是空
-    type_child_id = request.json['type_child_id'] #不是空，在project_type_child有对应
-    rank_id = request.json['rank_id'] #不是空
+    type_child_id = int( request.json['type_child_id'] ) #不是空，在project_type_child有对应
+    rank_id = int( request.json['rank_id'] ) #不是空
     college_id = collegeId #不是空
     begin_year_month = request.json['begin_year_month']
     mid_check_year_month = request.json['mid_check_year_month']
@@ -142,7 +141,7 @@ def teacherReformProjectCreate():
         createError = 1
         errorMsg = '项目编号不能为空'
 
-    projectChildType = ProjectChildType.query.filter_by(id = type_child_id).fitst()
+    projectChildType = ProjectChildType.query.filter_by(id = type_child_id).first()
     if not projectChildType:
         createError = 1
         errorMsg = '教改项目子类型id没有对应'
@@ -206,6 +205,20 @@ def teacherReformProjectCreate():
     })
 
 '''
+    获取本项目变更记录 get project_change_record
+'''
+@normal.route('/teach_reform_project_change_record/get', methods=['GET', 'POST'])
+def teacherReformProjectChangeRecordGet():
+    project_id = request.json['project_id']
+    projectChangeRecord = ProjectChangeRecord.query.filter_by(project_id = project_id).all()
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'data': ProjectChangeRecord.to_json(projectChangeRecord )
+    })
+
+
+'''
     添加变更记录 project_change_record
 '''
 @normal.route('/teach_reform_project_change_record/create', methods=['GET', 'POST'])
@@ -258,6 +271,14 @@ def teacherReformProjectChangeRecordCreate():
     changeRecord.reason = reason
     changeRecord.change_time = change_time
     changeRecord.describe = describe
+    db.session.add(changeRecord)
+    db.session.commit()
+
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'reason': '添加成功'
+    })
 
 
 '''
@@ -305,7 +326,7 @@ def changeSubmitReformInfo():
         createError = 1
         errorMsg = '项目编号不能为空'
 
-    projectChildType = ProjectChildType.query.filter_by(id = type_child_id).fitst()
+    projectChildType = ProjectChildType.query.filter_by(id = type_child_id).first()
     if not projectChildType:
         createError = 1
         errorMsg = '教改项目子类型id没有对应'
@@ -376,6 +397,12 @@ def reformChangeStatus():
     id = request.json['id']
     status = request.json['status']
     teachReform = TeachReformProject.query.filter_by(id=id).first()
+    if int(teachReform.status) > 2:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '已审批不可修改'
+        })
     if teachReform:
         try:
             teachReform.status = status
@@ -388,13 +415,13 @@ def reformChangeStatus():
             return jsonify({
                 'code': 20001,
                 'status': 'failed',
-                'reason': '撤销提交失败!'
+                'reason': '状态更变失败!'
             })
     else:
         return jsonify({
             'code': 20001,
             'status': 'failed',
-            'reason': '撤销提交失败!'
+            'reason': '状态更变失败!'
         })
 
 
@@ -405,8 +432,6 @@ def reformChangeStatus():
 @normal.route('/teach_reform/status_search', methods=['GET', 'POST'])
 def statusSearchTeachReform():
     teacherToken = request.json['token']  # token 是教师的工号
-    cadminInfo = TeacherInfo.query.filter_by(number=teacherToken).first()
-    collegeId = cadminInfo.college_id
 
     status = request.json['status']
 
@@ -422,9 +447,9 @@ def statusSearchTeachReform():
         .join(TeacherInfo,TeacherInfo.number == TeacherProject.teacher_number) \
         .join(ProjectRank, ProjectRank.id == TeachReformProject.rank_id)
     if status != '0':
-        teach_reforms = teach_reforms.filter(TeachReformProject.college_id == collegeId,  TeachReformProject.status == status )
+        teach_reforms = teach_reforms.filter(TeacherProject.teacher_number == teacherToken,  TeachReformProject.status == status )
     else:
-        teach_reforms = teach_reforms.filter(TeachReformProject.college_id == collegeId)
+        teach_reforms = teach_reforms.filter(TeacherProject.teacher_number == teacherToken)
 
     teach_reform = teach_reforms.order_by(TeachReformProject.submit_time.desc()).all()
     if teach_reform:
@@ -439,7 +464,6 @@ def statusSearchTeachReform():
             'status': 'failed',
             'reason': '没有匹配项目!'
         })
-
 
 '''
     搜索
@@ -466,17 +490,17 @@ def searchTeachReformInfo():
         .join(ProjectRank, ProjectRank.id == TeachReformProject.rank_id)
 
     if search_type == '' and search_value == '':
-        teachReform = teachReforms.filter(TeachReformProject.college_id == collegeId, TeachReformProject.status != '1') \
+        teachReform = teachReforms.filter(TeacherProject.teacher_number == teacherToken  ) \
             .order_by(TeachReformProject.submit_time.desc()).all()
 
     elif search_type == 'reform_name':
         teachReform = teachReforms\
-            .filter(TeachReformProject.college_id == collegeId, TeachReformProject.project_name.like('%' + search_value + '%'), TeachReformProject.status != '1') \
+            .filter(TeacherProject.teacher_number == teacherToken,  TeachReformProject.project_name.like('%' + search_value + '%') ) \
             .order_by(TeachReformProject.submit_time.desc()).all()
 
     elif search_type == 'teacher_name':
         teachReform = teachReforms\
-            .filter(TeachReformProject.college_id == collegeId, TeacherInfo.name.like('%' + search_value + '%'), TeachReformProject.status != '1') \
+            .filter(TeacherProject.teacher_number == teacherToken,  TeacherInfo.name.like('%' + search_value + '%') ) \
             .order_by(TeachReformProject.submit_time.desc()).all()
 
     elif search_type == '' and search_value != '':
