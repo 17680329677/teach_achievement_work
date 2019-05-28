@@ -397,7 +397,7 @@ class DistributionInfo(db.Model):
     id = Column(INTEGER(11), primary_key=True)
     college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
     orientation_name = Column(String(255), nullable=False)
-    num_limit = Column(String(255), nullable=False)
+    num_limit = Column(INTEGER(11), nullable=False)
     start_time = Column(BIGINT(20), nullable=False)
     end_time = Column(BIGINT(20), nullable=False)
 
@@ -595,6 +595,7 @@ class Student(db.Model):
     name = Column(String(40))
     gender = Column(String(20))
     class_id = Column(ForeignKey('class_info.id'), nullable=False, index=True)
+    college_id = Column(INTEGER(11), nullable=False)
     gpa = Column(Float(255, True), nullable=False)
 
     _class = relationship('ClassInfo')

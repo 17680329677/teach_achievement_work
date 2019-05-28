@@ -5,7 +5,9 @@ import json
 from werkzeug.security import generate_password_hash
 
 from app import db
-from app.models import Department,TeacherInfo,College,TeacherTitle,BookRank,ProjectRank,ProjectType,ProjectChildType,InnovationRank
+from app.models import Department,TeacherInfo,College,TeacherTitle,\
+    BookRank,ProjectRank,ProjectType,ProjectChildType,InnovationRank,\
+    ClassInfo,DistributionInfo
 from JSONHelper import JSONHelper
 
 '''
@@ -16,6 +18,7 @@ from JSONHelper import JSONHelper
         4.学院教师信息【id+name+department_id】
         5.教研室教师信息【id+name+department_id】
         6.出版教材等级 BookRank
+        
         7.教改项目等级 ProjectRank
         8.教改项目类型 ProjectType
         9.教改项目子类型 ProjectChildType  
@@ -217,6 +220,52 @@ def getInnovationRankOptions():
             'reason': '选项信息为空'
         })
     option = InnovationRank.to_json(options)
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'data': option
+    })
+
+'''
+    11.班级信息
+'''
+@cadmin.route('/class_options/get',methods=['GET','POST'])
+def getClassOptions():
+    options = ClassInfo.query.all()
+    if not options:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '选项信息为空'
+        })
+    option = ClassInfo.to_json(options)
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'data': option
+    })
+
+
+'''
+    11.班级信息
+'''
+@cadmin.route('/distribution_options/get',methods=['GET','POST'])
+def getDistributionOptins():
+    cadminToken = request.json['token']  # token 是管理员的工号
+    cadminInfo = TeacherInfo.query.filter_by(number=cadminToken).first()
+    collegeId = cadminInfo.college_id
+
+    options = db.session.query(DistributionInfo.id.label('id'),\
+                               DistributionInfo.orientation_name.label('orientation_name'))\
+        .filter_by(college_id = collegeId).all()
+    if not options:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '选项信息为空'
+        })
+
+    option = JSONHelper.jsonBQlist(options)
     return jsonify({
         'code': 20000,
         'status': 'success',

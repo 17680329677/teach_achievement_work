@@ -3,8 +3,9 @@ from app.api_1_0.cadmin import cadmin
 from sqlalchemy import or_
 import json
 
+from JSONHelper import JSONHelper
 from app import db
-from app.models import Department,TeacherInfo
+from app.models import Department,TeacherInfo,MajorInfo
 
 '''
     教研室信息表
@@ -27,11 +28,17 @@ def getAllDepartment():
         department.number = TeacherInfo.query.filter_by(department_id = department.id).count()
     db.session.commit()
 
-    department = Department.to_json(departments)
+    departments = Department.to_json(departments)
+
+    print(departments)
+    for department in departments:
+        majors = MajorInfo.query.filter_by(department_id = department['id']).all()
+        department['majors'] = MajorInfo.to_json(majors)
+
     return jsonify({
         'code': 20000,
         'status': 'success',
-        'data': department
+        'data': departments
     })
 
 '''
@@ -172,6 +179,14 @@ def delDepartment():
     for teacherInfo in teacherInfos:
         teacherInfo.department_id = 0
     db.session.commit()
+
+    #删除教研室包含专业
+    majors = MajorInfo.query.filter_by(department_id = departmentId).all()
+    if majors:
+        for major in majors:
+            db.session.delete(major)
+        db.session.commit()
+
     #删除教研室
     department = Department.query.filter_by(id = departmentId).first()
     db.session.delete(department)
@@ -266,7 +281,6 @@ def departmentAddTeacher():
 '''
     删除教研室人员
 '''
-
 @cadmin.route('/department/del_teacher', methods=['GET', 'POST'])
 def departmentDeleteTeacher():
     teacherNumber = request.json['number']
@@ -291,3 +305,65 @@ def departmentDeleteTeacher():
             'status': 'failed',
             'reason': '没有此教师详细信息'
         })
+
+#  --------------------------------------教研室所含专业  有关  操作--------------------------------------
+'''
+    查找教研室包含专业
+'''
+@cadmin.route('/department/major/get', methods=['GET', 'POST'])
+def departmentMajorGet():
+    id = request.json['id']
+    majors = MajorInfo.query.filter_by(department_id = id).all()
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'data': MajorInfo.to_json(majors)
+    })
+
+'''
+    添加教研室专业
+'''
+@cadmin.route('/department/major/add', methods=['GET', 'POST'])
+def departmentMajorAdd():
+    cadminToken = request.json['token']  # token 是管理员的工号
+    cadminInfo = TeacherInfo.query.filter_by(number=cadminToken).first()
+    collegeId = cadminInfo.college_id
+
+    if not request.json['major_name']:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '请填写专业名称'
+        })
+
+    majorInfo = MajorInfo()
+    majorInfo.major_name = request.json['major_name']
+    majorInfo.college_id = collegeId
+    majorInfo.department_id = request.json['department_id']
+
+    db.session.add(majorInfo)
+    db.session.commit()
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'reason': '添加成功'
+    })
+
+
+'''
+    删除教研室专业
+'''
+@cadmin.route('/department/major/del', methods=['GET', 'POST'])
+def departmentMajorDel():
+    id = request.json['id']
+
+    majorInfo = MajorInfo.query.filter_by(id = id).first()
+
+    db.session.delete(majorInfo)
+    db.session.commit()
+
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'reason': '删除成功'
+    })
