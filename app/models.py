@@ -596,7 +596,7 @@ class Student(db.Model):
     gender = Column(String(20))
     class_id = Column(ForeignKey('class_info.id'), nullable=False, index=True)
     college_id = Column(INTEGER(11), nullable=False)
-    gpa = Column(Float(255, True), nullable=False)
+    gpa = Column(Float(asdecimal=True), nullable=False)
 
     _class = relationship('ClassInfo')
 

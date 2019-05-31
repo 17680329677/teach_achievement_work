@@ -12,7 +12,7 @@ from app.models import Student,DistributionResult,DistributionInfo,TeacherInfo
 '''
 
 '''
-    显示所有分流志愿  
+    显示所有分流结果
 '''
 @cadmin.route('/distribution_result/get',methods=['GET','POST'])
 def getDistributionResult():
