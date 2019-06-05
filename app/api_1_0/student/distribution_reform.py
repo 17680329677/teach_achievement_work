@@ -4,8 +4,8 @@ from app import db
 
 #from werkzeug.security import generate_password_hash
 from JSONHelper import JSONHelper
-from app.models import Student,DistributionResult,DistributionInfo,ClassInfo,College
-
+from app.models import Student,DistributionResult,DistributionInfo,ClassInfo,College,DistributionDesire
+import time
 '''
     学生 student
 '''
@@ -15,7 +15,7 @@ from app.models import Student,DistributionResult,DistributionInfo,ClassInfo,Col
 '''
 @student.route('/student_info/get',methods=['GET','POST'])
 def getStudentInfo():
-    studentId = request.json['token']  # token 是管理员的工号
+    studentId = request.json['token']  # token 是学号
     student  = Student.query.filter_by(id = studentId).first()
     collegeId = student.college_id
 
@@ -39,7 +39,7 @@ def getStudentInfo():
     #加入gpa排名
     gpaList = db.session.query(Student).filter(Student.college_id == collegeId).order_by(Student.gpa.desc()).all()
     gpaRank = 0;
-    print(gpaList)
+    #print(gpaList)
     for item in gpaList:
         gpaRank = gpaRank +1
         if item.id == int(studentId):
@@ -61,3 +61,68 @@ def getStudentInfo():
             'status': 'failed',
             'reason': '没有查找到信息'
         })
+
+
+'''
+    获取学生志愿
+'''
+@student.route('/distribution_desire/get',methods=['GET','POST'])
+def getDistributionDesire():
+    studentId = request.json['token']  # token 是学号
+    student  = Student.query.filter_by(id = studentId).first()
+    collegeId = student.college_id
+
+    desire = DistributionDesire.query.filter(DistributionDesire.student_id == studentId).order_by( DistributionDesire.desire_rank.asc() ).all()
+
+    if desire:
+        return jsonify({
+            'code': 20000,
+            'status': 'success',
+            'data': DistributionDesire.to_json(desire)
+        })
+    else:
+        return jsonify({
+            'code': 20000,
+            'status': 'success',
+            'data': []
+        })
+
+'''
+    添加志愿
+'''
+@student.route('/distribution_desire/add',methods=['GET','POST'])
+def addDistributionDesire():
+    studentId = request.json['token']  # token 是学号
+    student  = Student.query.filter_by(id = studentId).first()
+    collegeId = student.college_id
+
+    #查询志愿是否存在
+    existDesire = DistributionDesire.query.\
+        filter( DistributionDesire.student_id == studentId,DistributionDesire.distribution_id == request.json['distribution_id'] )\
+        .first()
+    if existDesire:
+        return jsonify({
+            'code': 20001,
+            'status': 'failed',
+            'reason': '志愿已存在'
+        })
+
+    #查询志愿是否填满
+    #full = DistributionDesire.query
+
+
+    desire = DistributionDesire()
+    desire.college_id = collegeId
+    desire.student_id = studentId
+    desire.distribution_id = request.json['distribution_id']
+    desire.desire_rank = request.json['desire_rank']
+    desire.submit_time = int(time.time())
+    desire.status = '1'
+    db.session.add(desire)
+    db.session.commit()
+
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'reason': '提交成功'
+    })
