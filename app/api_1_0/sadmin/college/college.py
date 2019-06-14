@@ -29,8 +29,8 @@ def getAllCollegeInfo():
 def collegeUpdate():
     college = College.query.filter_by(id=request.json['id']).first()
     if college is not None:
+        college.id = request.json['id']
         college.name = request.json['college_name']
-        college.college_id = request.json['college_id']
         db.session.commit()
         return jsonify({
             'code': 20000,
@@ -69,16 +69,16 @@ def collegeDelete():
 @sadmin.route('/college/add', methods=['GET', 'POST'])
 def collegeAdd():
     college = College.query.\
-        filter(or_(College.college_id==request.json['college_id'], College.name==request.json['college_name'])).first()
+        filter(or_(College.id==request.json['id'], College.name==request.json['college_name'])).first()
     if college is not None:
         return jsonify({
             'code': 20000,
             'status': 'failed',
-            'reason': 'college_id or name was duplicated！'
+            'reason': '学院id或名称重复！'
         })
     college = College()
     college.name = request.json['college_name']
-    college.college_id = request.json['college_id']
+    college.id = request.json['id']
     db.session.add(college)
     db.session.commit()
     return jsonify({

@@ -5,7 +5,9 @@ from app import db
 from sqlalchemy import or_
 
 '''
-    学期配置
+    学期配置 
+    
+    注意事项：
 '''
 
 '''

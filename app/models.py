@@ -11,9 +11,11 @@ from sqlalchemy.orm import relationship
 
 
 
+
 '''
 新增的库：2019.3.15修改
 新增关联：2019.4.29
+新增course表、teacher_category表、：2019.6.9
 '''
 
 
@@ -34,7 +36,7 @@ class BookRank(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -55,7 +57,7 @@ class CertificateRank(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -85,7 +87,7 @@ class College(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -96,6 +98,19 @@ class College(db.Model):
         return v
 
 
+class Course(db.Model):
+    __tablename__ = 'course'
+
+    id = Column(INTEGER(11), primary_key=True)
+    course_name = Column(String(255))
+    category = Column(String(20))
+    all_teaching_time = Column(INTEGER(11))
+    credit = Column(Float(asdecimal=True))
+    classes = Column(String(255))
+    choose_number = Column(INTEGER(11))
+    teacher = Column(String(255))
+    submit_time = Column(BIGINT(20))
+    college_id = Column(INTEGER(11))
 
 
 
@@ -109,40 +124,7 @@ class InnovationRank(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
                 result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
-
-class InvigilateInfo(db.Model):
-    __tablename__ = 'invigilate_info'
-
-    id = Column(INTEGER(11), primary_key=True)
-    apply_teacher = Column(ForeignKey('teacher.number'), nullable=False, index=True)
-    subject = Column(String(255), nullable=False)
-    semester_id = Column(ForeignKey('semester_info.id'), index=True)
-    _class = Column('class', String(255), nullable=False)
-    college_id = Column(INTEGER(11), nullable=False)
-    exam_time = Column(BIGINT(20))
-    location = Column(String(255), nullable=False)
-    participate_teacher = Column(String(255), nullable=False)
-    submit_time = Column(BIGINT(20), nullable=False)
-    status = Column(String(80))
-
-    teacher = relationship('Teacher')
-    semester = relationship('SemesterInfo')
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
             else:
                 result[key] = getattr(self, key)
         return result
@@ -163,7 +145,7 @@ class ProjectRank(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -185,7 +167,7 @@ class ProjectType(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -207,7 +189,7 @@ class SemesterInfo(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -230,21 +212,42 @@ class TeachReformPaper(db.Model):
     publish_year_month = Column(BIGINT(20))
     journal_year = Column(String(255))
     journal_number = Column(String(255))
-    college_id = Column(INTEGER(11))
     journal_volum = Column(String(255))
-    status = Column(String(40))
     source_project = Column(String(255))
     cover_path = Column(String(255))
     content_path = Column(String(255))
     text_path = Column(String(255))
     cnki_url = Column(String(255))
     participate_teacher = Column(String(255))
+    college_id = Column(INTEGER(11))
+    status = Column(String(40))
 
     def dobule_to_dict(self):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
+
+
+class TeacherCategory(db.Model):
+    __tablename__ = 'teacher_category'
+
+    id = Column(INTEGER(11), primary_key=True)
+    name = Column(String(255))
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -266,7 +269,7 @@ class TeacherType(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -282,24 +285,24 @@ class Book(db.Model):
 
     id = Column(INTEGER(11), primary_key=True)
     book_name = Column(String(255), nullable=False)
-    book_number = Column(String(255), nullable=False)
-    publish_year_month = Column(BIGINT(20), nullable=False)
+    book_number = Column(String(255))
+    publish_year_month = Column(BIGINT(20))
     pages = Column(INTEGER(11))
     words = Column(INTEGER(11))
     isbn = Column(String(255))
     press = Column(String(100))
-    version = Column(String(60), nullable=False)
+    version = Column(String(60))
     style = Column(String(60))
-    rank_id = Column(ForeignKey('book_rank.id'), nullable=False, index=True)
+    rank_id = Column(ForeignKey('book_rank.id'), index=True)
     college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
     source_project = Column(String(255))
-    status = Column(String(255))
     cover_path = Column(String(255))
     copyright_path = Column(String(255))
     content_path = Column(String(255))
     participate_teacher = Column(String(255))
     submit_teacher = Column(String(255), nullable=False)
     submit_time = Column(BIGINT(20))
+    status = Column(String(255))
 
     college = relationship('College')
     rank = relationship('BookRank')
@@ -314,7 +317,7 @@ class Book(db.Model):
     #     result = {}
     #     for key in self.__mapper__.c.keys():
     #         if getattr(self, key) is not None:
-    #             result[key] = str(getattr(self, key))
+    #             result[key] = getattr(self, key)
     #         else:
     #             result[key] = getattr(self, key)
     #     return result
@@ -323,7 +326,7 @@ class Book(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -349,7 +352,7 @@ class ClassInfo(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -381,7 +384,7 @@ class Department(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -407,7 +410,7 @@ class DistributionInfo(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -444,7 +447,7 @@ class InnovationProject(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -468,7 +471,7 @@ class ProjectChildType(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -499,7 +502,7 @@ class Teacher(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -515,15 +518,15 @@ class TeacherTitle(db.Model):
 
     id = Column(INTEGER(11), primary_key=True)
     name = Column(String(255), nullable=False)
-    type_id = Column(ForeignKey('teacher_type.id'), index=True)
+    teacher_category_id = Column(ForeignKey('teacher_category.id'), nullable=False, index=True)
 
-    type = relationship('TeacherType')
+    teacher_category = relationship('TeacherCategory')
 
     def dobule_to_dict(self):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -550,7 +553,7 @@ class InnovationTeacher(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -560,7 +563,38 @@ class InnovationTeacher(db.Model):
         v = [ven.dobule_to_dict() for ven in all_vendors]
         return v
 
+class InvigilateInfo(db.Model):
+    __tablename__ = 'invigilate_info'
 
+    id = Column(INTEGER(11), primary_key=True)
+    apply_teacher = Column(ForeignKey('teacher.number'), nullable=False, index=True)
+    subject = Column(ForeignKey('course.id'), nullable=False, index=True)
+    semester_id = Column(ForeignKey('semester_info.id'), index=True)
+    _class = Column('class', String(255), nullable=False)
+    exam_time = Column(BIGINT(20))
+    location = Column(String(255), nullable=False)
+    participate_teacher = Column(String(255), nullable=False)
+    submit_time = Column(BIGINT(20), nullable=False)
+    college_id = Column(INTEGER(11), nullable=False)
+    status = Column(String(80))
+
+    teacher = relationship('Teacher')
+    semester = relationship('SemesterInfo')
+    course = relationship('Course')
+
+    def dobule_to_dict(self):
+        result = {}
+        for key in self.__mapper__.c.keys():
+            if getattr(self, key) is not None:
+                result[key] = getattr(self, key)
+            else:
+                result[key] = getattr(self, key)
+        return result
+
+    # 配合多个对象使用的函数
+    def to_json(all_vendors):
+        v = [ven.dobule_to_dict() for ven in all_vendors]
+        return v
 
 class MajorInfo(db.Model):
     __tablename__ = 'major_info'
@@ -577,7 +611,7 @@ class MajorInfo(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -607,7 +641,7 @@ class Student(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -622,23 +656,23 @@ class TeachReformProject(db.Model):
 
     id = Column(INTEGER(11), primary_key=True)
     project_name = Column(String(255), nullable=False)
-    project_number = Column(String(255), nullable=False)
+    project_number = Column(String(255))
     type_child_id = Column(ForeignKey('project_child_type.id'), nullable=False, index=True)
     rank_id = Column(ForeignKey('project_rank.id'), nullable=False, index=True)
     college_id = Column(ForeignKey('college.id'), nullable=False, index=True)
     begin_year_month = Column(BIGINT(20))
     mid_check_year_month = Column(BIGINT(20))
-    end_year_month = Column(BIGINT(20))
     mid_check_rank = Column(String(20))
+    end_year_month = Column(BIGINT(20))
     end_check_rank = Column(String(20))
     subject = Column(String(80))
-    status = Column(String(20))
     host_student = Column(String(255))
     participate_student = Column(String(255))
     remark = Column(String(255))
     grade = Column(String(255))
     funds = Column(String(100))
     submit_time = Column(BIGINT(20), nullable=False)
+    status = Column(String(20))
 
     college = relationship('College')
     rank = relationship('ProjectRank')
@@ -648,7 +682,7 @@ class TeachReformProject(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -674,7 +708,7 @@ class TeacherBook(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -689,18 +723,18 @@ class TeacherInfo(db.Model):
     __tablename__ = 'teacher_info'
 
     id = Column(INTEGER(11), primary_key=True)
-    number = Column(ForeignKey('teacher.number'), nullable=False, index=True)
-    name = Column(String(100), nullable=False)
-    gender = Column(String(20), nullable=False)
+    number = Column(ForeignKey('teacher.number'), index=True)
+    name = Column(String(100))
+    gender = Column(String(20))
     nationality = Column(String(20))
     birth_year_month = Column(BIGINT(20))
-    department_id = Column(INTEGER(11), nullable=False)
     college_id = Column(INTEGER(11))
+    department_id = Column(INTEGER(11))
     teachertitle_id = Column(ForeignKey('teacher_title.id'), index=True)
     managertitle_id = Column(ForeignKey('teacher_title.id'), index=True)
+    teacher_category_id = Column(ForeignKey('teacher_category.id'), index=True)
     type = Column(String(20))
     type_id = Column(ForeignKey('teacher_type.id'), nullable=False, index=True)
-    status = Column(String(60))
     work_begin_year_month = Column(BIGINT(20))
     bjfu_join_year_month = Column(BIGINT(20))
     highest_education = Column(String(255))
@@ -710,9 +744,11 @@ class TeacherInfo(db.Model):
     research_direction = Column(String(255))
     telephone = Column(String(60))
     email = Column(String(255))
+    status = Column(String(60))
 
     managertitle = relationship('TeacherTitle', primaryjoin='TeacherInfo.managertitle_id == TeacherTitle.id')
     teacher = relationship('Teacher')
+    teacher_category = relationship('TeacherCategory')
     teachertitle = relationship('TeacherTitle', primaryjoin='TeacherInfo.teachertitle_id == TeacherTitle.id')
     type1 = relationship('TeacherType')
 
@@ -720,7 +756,7 @@ class TeacherInfo(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -746,7 +782,7 @@ class TeacherPaper(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -774,7 +810,7 @@ class TitleRecord(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -810,7 +846,7 @@ class CertificateInfo(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -839,7 +875,7 @@ class DistributionDesire(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -865,7 +901,7 @@ class DistributionResult(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -890,7 +926,7 @@ class ProjectChangeRecord(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -916,7 +952,7 @@ class TeacherProject(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -941,7 +977,7 @@ class TeacherCertificate(db.Model):
         result = {}
         for key in self.__mapper__.c.keys():
             if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
+                result[key] = getattr(self, key)
             else:
                 result[key] = getattr(self, key)
         return result
@@ -950,180 +986,3 @@ class TeacherCertificate(db.Model):
     def to_json(all_vendors):
         v = [ven.dobule_to_dict() for ven in all_vendors]
         return v
-
-
-
-'''
-之前的Model：
-class Teacher(db.Model):
-    __tablename__ = 'teacher'
-    id = db.Column(db.Integer, primary_key=True)
-    number = db.Column(db.String, primary_key=False, nullable=False)
-    password = db.Column(db.String, primary_key=False, nullable=False)
-    type = db.Column(db.String, primary_key=False, nullable=False)
-
-    def __init__(self, id, number, password, type):
-        self.id = id
-        self.number = number
-        self.password = password
-        self.type = type
-
-    def __repr__(self):
-        return '<Teacher %r>' % self.number
-
-    def verify_password(self, password):
-        return check_password_hash(self.password, password)  #如果密码正确return true
-
-
-class College(db.Model):
-    __tablename__ = 'college'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, primary_key=False, nullable=False)
-    college_id = db.Column(db.String, primary_key=False, nullable=False)
-    department_num = db.Column(db.Integer, primary_key=False, nullable=True)
-    teacher_num = db.Column(db.Integer, primary_key=False, nullable=True)
-
-    def __repr__(self):
-        return '<College %r>' % self.name
-
-    def single_to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
-
-class TeacherInfo(db.Model):
-    __tablename__ = 'teacher_info'
-    id = db.Column(db.Integer, primary_key=True)
-    number = db.Column(db.String, primary_key=False, nullable=False)
-    name = db.Column(db.String, primary_key=False, nullable=False)
-    gender = db.Column(db.String, primary_key=False, nullable=True)
-    nationality = db.Column(db.String, primary_key=False, nullable=True)
-    birth_year_month = db.Column(db.String, primary_key=False, nullable=True)
-    department_id = db.Column(db.Integer, primary_key=False, nullable=True)
-    college_id = db.Column(db.Integer, primary_key=False, nullable=False)
-    teachertitle_id = db.Column(db.Integer, primary_key=False, nullable=True)
-    managertitle_id = db.Column(db.Integer, primary_key=False, nullable=True)
-    type = db.Column(db.String, primary_key=False, nullable=True)
-    type_id = db.Column(db.Integer, primary_key=False, nullable=False)
-    status = db.Column(db.String, primary_key=False, nullable=True)
-    work_begin_year_month = db.Column(db.String, primary_key=False, nullable=True)
-    bjfu_join_year_month = db.Column(db.String, primary_key=False, nullable=True)
-    highest_education = db.Column(db.String, primary_key=False, nullable=True)
-    highest_education_accord_year_month = db.Column(db.String, primary_key=False, nullable=True)
-    graduate_paper_title = db.Column(db.String, primary_key=False, nullable=True)
-    graduate_school = db.Column(db.String, primary_key=False, nullable=True)
-    research_direction = db.Column(db.String, primary_key=False, nullable=True)
-    telephone = db.Column(db.String, primary_key=False, nullable=True)
-    email = db.Column(db.String, primary_key=False, nullable=True)
-
-
-class TeacherType(db.Model):
-    __tablename__ = 'teacher_type'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    type_name = db.Column(db.String, primary_key=False)
-    role = db.Column(db.String, primary_key=False)
-
-
-class Department(db.Model):
-    __tablename__ = 'department'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, primary_key=False, nullable=False)
-    number = db.Column(db.String, primary_key=False, nullable=True)
-    director = db.Column(db.String, primary_key=False, nullable=True)
-    college_id = db.Column(db.Integer, primary_key=False, nullable=False)
-
-    def __init__(self, id, name, number, director, college_id):
-        self.id = id
-        self.name = name
-        self.number = number
-        self.director = director
-        self.college_id = college_id
-
-    def __repr__(self):
-        return '<Department %r>' % self.name
-
-
-class BookRank(db.Model):
-    __tablename__ = 'book_rank'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    rank_name = db.Column(db.String, primary_key=False, nullable=False)
-
-    def __repr__(self):
-        return '<BookRank %r>' % self.rank_name
-
-    def single_to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-    def dobule_to_dict(self):
-        result = {}
-        for key in self.__mapper__.c.keys():
-            if getattr(self, key) is not None:
-                result[key] = str(getattr(self, key))
-            else:
-                result[key] = getattr(self, key)
-        return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
-
-class Book(db.Model):
-    __tablename__ = 'book'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    book_name = db.Column(db.String, primary_key=False, nullable=False)
-    book_number = db.Column(db.String, primary_key=False, nullable=False)
-    publish_year_month = db.Column(db.String, primary_key=False, nullable=False)
-    pages = db.Column(db.Integer, primary_key=False, nullable=True)
-    words = db.Column(db.Integer, primary_key=False, nullable=True)
-    isbn = db.Column(db.String, primary_key=False, nullable=False)
-    press = db.Column(db.String, primary_key=False, nullable=False)
-    version = db.Column(db.String, primary_key=False, nullable=False)
-    style = db.Column(db.String, primary_key=False, nullable=False)
-    rank_id = db.Column(db.Integer, primary_key=False, nullable=False)
-    college_id = db.Column(db.Integer, primary_key=False, nullable=False)
-    source_project = db.Column(db.String, primary_key=False, nullable=True)
-    status = db.Column(db.String, primary_key=False, nullable=False)
-    cover_path = db.Column(db.String, primary_key=False, nullable=True)
-    copyright_path = db.Column(db.String, primary_key=False, nullable=True)
-    content_path = db.Column(db.String, primary_key=False, nullable=True)
-    participate_teacher = db.Column(db.String, primary_key=False, nullable=True)
-    submit_teacher = db.Column(db.String, primary_key=False, nullable=False)
-    submit_time = db.Column(db.DateTime, primary_key=False, nullable=True)
-
-    def __repr__(self):
-        return '<Book %r>' % self.book_name
-
-    # def single_to_dict(self):
-    #     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-    #
-    # def dobule_to_dict(self):
-    #     result = {}
-    #     for key in self.__mapper__.c.keys():
-    #         if getattr(self, key) is not None:
-    #             result[key] = str(getattr(self, key))
-    #         else:
-    #             result[key] = getattr(self, key)
-    #     return result
-
-    # 配合多个对象使用的函数
-    def to_json(all_vendors):
-        v = [ven.dobule_to_dict() for ven in all_vendors]
-        return v
-
-
-'''

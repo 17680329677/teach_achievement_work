@@ -31,12 +31,6 @@ from JSONHelper import JSONHelper
 @normal.route('/college_options/get',methods=['GET','POST'])
 def getCollegeOptions():
     options = College.query.filter_by().all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = College.to_json(options)
     return jsonify({
         'code': 20000,
@@ -51,12 +45,6 @@ def getCollegeOptions():
 @normal.route('/department_options/get',methods=['GET','POST'])
 def getDepartmentOptions():
     options = Department.query.filter_by().all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = Department.to_json(options)
     return jsonify({
         'code': 20000,
@@ -136,12 +124,6 @@ def getTeacherNumberAndNameByDepartmentId():
 @normal.route('/book_rank_options/get',methods=['GET','POST'])
 def getBookRankOptions():
     options = BookRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = BookRank.to_json(options)
     return jsonify({
         'code': 20000,
@@ -155,12 +137,6 @@ def getBookRankOptions():
 @normal.route('/project_rank_options/get',methods=['GET','POST'])
 def getProjectRankOptions():
     options = ProjectRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = ProjectRank.to_json(options)
     return jsonify({
         'code': 20000,
@@ -174,12 +150,6 @@ def getProjectRankOptions():
 @normal.route('/project_type_options/get',methods=['GET','POST'])
 def getProjectTypeOptions():
     options = ProjectRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = ProjectType.to_json(options)
     return jsonify({
         'code': 20000,
@@ -193,12 +163,6 @@ def getProjectTypeOptions():
 @normal.route('/project_child_type_options/get',methods=['GET','POST'])
 def getProjectChildTypeOptions():
     options = ProjectChildType.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = ProjectChildType.to_json(options)
     return jsonify({
         'code': 20000,
@@ -212,12 +176,6 @@ def getProjectChildTypeOptions():
 @normal.route('/innovation_rank_options/get',methods=['GET','POST'])
 def getInnovationRankOptions():
     options = InnovationRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = InnovationRank.to_json(options)
     return jsonify({
         'code': 20000,
@@ -231,12 +189,6 @@ def getInnovationRankOptions():
 @normal.route('/semester_info_options/get',methods=['GET','POST'])
 def getSemesterInfoOptions():
     options = SemesterInfo.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = SemesterInfo.to_json(options)
     return jsonify({
         'code': 20000,

@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 from app import db
 from app.models import Department,TeacherInfo,College,TeacherTitle,\
     BookRank,ProjectRank,ProjectType,ProjectChildType,InnovationRank,\
-    ClassInfo,DistributionInfo
+    ClassInfo,DistributionInfo,TeacherCategory
 from JSONHelper import JSONHelper
 
 '''
@@ -21,8 +21,12 @@ from JSONHelper import JSONHelper
         
         7.教改项目等级 ProjectRank
         8.教改项目类型 ProjectType
-        9.教改项目子类型 ProjectChildType  
+        9.教改项目子类型 ProjectChildType
         10.大创等级 InnovationRank
+        11. 班级信息选项
+        12.班级信息
+        
+        13.教师岗位类别
 '''
 
 
@@ -31,13 +35,7 @@ from JSONHelper import JSONHelper
 '''
 @cadmin.route('/college_options/get',methods=['GET','POST'])
 def getCollegeOptions():
-    options = College.query.filter_by().all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
+    options = College.query.all()
     option = College.to_json(options)
     return jsonify({
         'code': 20000,
@@ -51,13 +49,7 @@ def getCollegeOptions():
 '''
 @cadmin.route('/department_options/get',methods=['GET','POST'])
 def getDepartmentOptions():
-    options = Department.query.filter_by().all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
+    options = Department.query.all()
     option = Department.to_json(options)
     return jsonify({
         'code': 20000,
@@ -137,12 +129,6 @@ def getTeacherNumberAndNameByDepartmentId():
 @cadmin.route('/book_rank_options/get',methods=['GET','POST'])
 def getBookRankOptions():
     options = BookRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = BookRank.to_json(options)
     return jsonify({
         'code': 20000,
@@ -156,12 +142,6 @@ def getBookRankOptions():
 @cadmin.route('/project_rank_options/get',methods=['GET','POST'])
 def getProjectRankOptions():
     options = ProjectRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = ProjectRank.to_json(options)
     return jsonify({
         'code': 20000,
@@ -175,12 +155,6 @@ def getProjectRankOptions():
 @cadmin.route('/project_type_options/get',methods=['GET','POST'])
 def getProjectTypeOptions():
     options = ProjectRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = ProjectType.to_json(options)
     return jsonify({
         'code': 20000,
@@ -194,12 +168,6 @@ def getProjectTypeOptions():
 @cadmin.route('/project_child_type_options/get',methods=['GET','POST'])
 def getProjectChildTypeOptions():
     options = ProjectChildType.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = ProjectChildType.to_json(options)
     return jsonify({
         'code': 20000,
@@ -213,12 +181,6 @@ def getProjectChildTypeOptions():
 @cadmin.route('/innovation_rank_options/get',methods=['GET','POST'])
 def getInnovationRankOptions():
     options = InnovationRank.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = InnovationRank.to_json(options)
     return jsonify({
         'code': 20000,
@@ -232,12 +194,6 @@ def getInnovationRankOptions():
 @cadmin.route('/class_options/get',methods=['GET','POST'])
 def getClassOptions():
     options = ClassInfo.query.all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
     option = ClassInfo.to_json(options)
     return jsonify({
         'code': 20000,
@@ -247,7 +203,7 @@ def getClassOptions():
 
 
 '''
-    11.班级信息
+    12.班级信息
 '''
 @cadmin.route('/distribution_options/get',methods=['GET','POST'])
 def getDistributionOptins():
@@ -258,16 +214,26 @@ def getDistributionOptins():
     options = db.session.query(DistributionInfo.id.label('id'),\
                                DistributionInfo.orientation_name.label('orientation_name'))\
         .filter_by(college_id = collegeId).all()
-    if not options:
-        return jsonify({
-            'code': 20001,
-            'status': 'failed',
-            'reason': '选项信息为空'
-        })
 
     option = JSONHelper.jsonBQlist(options)
     return jsonify({
         'code': 20000,
         'status': 'success',
         'data': option
+    })
+
+
+
+
+'''
+    13.教师岗位类别
+'''
+@cadmin.route('/teacher_category_options/get',methods=['GET','POST'])
+def getTeacherCategoryOptions():
+    options = TeacherCategory.query.all()
+    options = TeacherCategory.to_json(options)
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'data': options
     })
