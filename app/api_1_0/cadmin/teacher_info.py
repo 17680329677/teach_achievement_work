@@ -77,15 +77,37 @@ def getTeacherInfo():
 '''
 @cadmin.route('/teacher_info/add',methods=['GET','POST'])
 def addTeacherInfo():
-    '''
-    test = request.json['test']
-    print(isinstance(request.json['test'],int))
+
+    """
+     # 判断变量类型的函数
+    def typeof(variate):
+        type = None
+        if isinstance(variate, int):
+            type = "int"
+        elif isinstance(variate, str):
+            type = "str"
+        elif isinstance(variate, float):
+            type = "float"
+        elif isinstance(variate, list):
+            type = "list"
+        elif isinstance(variate, tuple):
+            type = "tuple"
+        elif isinstance(variate, dict):
+            type = "dict"
+        elif isinstance(variate, set):
+            type = "set"
+        return type
+
+    testDict = request.json
+
+    print(typeof(testDict))
+    #print(isinstance(request.json['test'],int))
     return jsonify({
-        'code': 20000,
-        'status': 'success',
-        'data': ''
+        'data': testDict.get('test5',None)
     })
-    '''
+    """
+
+
 
 
     errState = 0
@@ -104,6 +126,7 @@ def addTeacherInfo():
         errState = 1
         errMessage = '教师性别未填写'
     nationality = request.json['nationality']  #民族
+    #request.get_data()
     birth_year_month = request.json['birth_year_month']
 
 
@@ -173,10 +196,7 @@ def addTeacherInfo():
             if teachertitle_id:
                 teacher_category_id = TeacherTitle.query.filter_by(id = teachertitle_id).first()
 
-    type = request.json['type']
-    '''---------------【双肩挑信息自动判断】--------------'''
-    if teachertitle_id and managertitle_id:
-        type = "是"
+    type = request.json['type']  #双肩挑不自动判断，按照学院管理员导入的来。
 
     normalId = TeacherType.query.filter_by(role = 'normal').first().id
     type_id = normalId #指向teacher_type表的id

@@ -71,3 +71,15 @@ def grantTeacherGrant():
         'status': 'success',
         'reason': '添加成功'
     })
+
+"""
+    导入教师职称
+"""
+@cadmin.route('/teacher_title/import',methods=['GET','POST'])
+def importTeacherTitle():
+    teacherName = request.get_data()
+    return jsonify({
+        'code': 20000,
+        'status': 'success',
+        'data': ''
+    })

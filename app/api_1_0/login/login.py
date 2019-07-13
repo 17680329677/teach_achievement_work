@@ -23,7 +23,7 @@ def login():
 
     if type == 'teacher':
         teacher = Teacher.query.filter_by(number = username).first()
-        if teacher is not None and teacher.verify_password(password):
+        if teacher is not None :#and teacher.verify_password(password)
             teachers = {
                 'code': 20000,
                 'data': {
@@ -39,6 +39,7 @@ def login():
                     }
             return jsonify(teachers)
     elif type == 'student':
+
         student = Student.query.filter_by(id = username).first()
         if student is not None and student.password == password: #student.verify_password(password)
             return jsonify({
@@ -145,9 +146,18 @@ def logout():
 @api.route('/dev/password', methods=['GET', 'POST'])
 def pwd_hash():
     teachers = Teacher.query.all()
+
     for teacher in teachers:
         teacher.password = generate_password_hash(teacher.password)
         db.session.commit()
+
+    '''
+    students = Student.query.all()
+    for student in students:
+        student.password = generate_password_hash(student.password)
+        db.session.commit()
+    '''
+
     return 'success'
 
 

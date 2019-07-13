@@ -1,24 +1,26 @@
 from . import db
 from werkzeug.security import check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+#from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+#from flask import current_app
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, String
+
+
+from sqlalchemy import Column, DateTime, Float, ForeignKey, String, Boolean
 from sqlalchemy.dialects.mysql import INTEGER,BIGINT
 from sqlalchemy.orm import relationship
 # from sqlalchemy.ext.declarative import declarative_base
 
-
-
+from app.utils.url_condition.url_condition_mysql import UrlCondition, process_query, count_query, page_query
+from app.utils.Error import CustomError
+from datetime import datetime
 
 
 '''
-新增的库：2019.3.15修改
-新增关联：2019.4.29
-新增course表、teacher_category表、：2019.6.9
+2019.3.15：新增的库
+2019.4.29：新增关联
+2019.6.9：新增course表、teacher_category表
+2019.7.5：弃用，转为model包里面
 '''
-
-
 
 class BookRank(db.Model):
     __tablename__ = 'book_rank'
@@ -375,8 +377,6 @@ class Department(db.Model):
 
     college = relationship('College')
 
-
-
     def __repr__(self):
         return '<Department %r>' % self.name
 
@@ -489,6 +489,7 @@ class Teacher(db.Model):
     number = Column(String(60), nullable=False, index=True)
     password = Column(String(255), nullable=False)
     type = Column(ForeignKey('teacher_type.id'), nullable=False, index=True)
+    using = Column(Boolean, default=True)
 
     teacher_type = relationship('TeacherType')
 
@@ -745,6 +746,7 @@ class TeacherInfo(db.Model):
     telephone = Column(String(60))
     email = Column(String(255))
     status = Column(String(60))
+    using = Column(Boolean, default = True)
 
     managertitle = relationship('TeacherTitle', primaryjoin='TeacherInfo.managertitle_id == TeacherTitle.id')
     teacher = relationship('Teacher')
