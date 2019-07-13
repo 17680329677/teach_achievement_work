@@ -39,7 +39,7 @@ def collegeUpdate():
         })
     else:
         return jsonify({
-            'code': 20000,
+            'code': 20001,
             'status': 'failed',
             'reason': 'can not find the selected college!'
         })
