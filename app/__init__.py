@@ -2,8 +2,13 @@ from flask import Flask
 from config import Config
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from kafka import KafkaConsumer, KafkaProducer
+import json
 
 db = SQLAlchemy()
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
 
 
 def create_app(config_name):
@@ -14,8 +19,12 @@ def create_app(config_name):
     app.config.from_object(Config[config_name])
     Config[config_name].init_app(app)
 
-    db.init_app(app)
-    cors.init_app(app)
+    db.init_app(app) #数据库初始化
+    cors.init_app(app)  #跨域初始化
+    login_manager.init_app(app)  #LoginManager
+    #数据库消息订阅
+    app.kafka_producer = KafkaProducer(bootstrap_servers=app.config['KAFLKA_HOST'],
+                                       value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
     #基础功能
     from .api_1_0 import api as api_1_0_blueprint
