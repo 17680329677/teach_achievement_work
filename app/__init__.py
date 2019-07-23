@@ -23,8 +23,7 @@ def create_app(config_name):
     cors.init_app(app)  #跨域初始化
     login_manager.init_app(app)  #LoginManager
     #数据库消息订阅
-    app.kafka_producer = KafkaProducer(bootstrap_servers=app.config['KAFLKA_HOST'],
-                                       value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+    #app.kafka_producer = KafkaProducer(bootstrap_servers=app.config['KAFLKA_HOST'],value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
     #基础功能
     from .api_1_0 import api as api_1_0_blueprint
