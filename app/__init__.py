@@ -2,18 +2,19 @@ from flask import Flask
 from config import Config
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from app.utils.mysql import db
+
 from flask_login import LoginManager
 from kafka import KafkaConsumer, KafkaProducer
 import json
 
-db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 
 
 def create_app(config_name):
 
-    app = Flask(__name__)
+    app = Flask(__name__) #  Flask(__name__, static_folder=basedir + '/static')
     # 利用flask-cors解决跨域问题，/*允许所有域外请求通过
     cors = CORS(app, resources={r"/*": {"origins": "*"}})
     app.config.from_object(Config[config_name])
