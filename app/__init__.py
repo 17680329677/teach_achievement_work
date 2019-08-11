@@ -2,8 +2,8 @@ import os
 
 from flask import Flask
 from app.config import Config
+import app.handler as handler
 from flask_cors import CORS
-from app.utils.mysql import db
 import app.handler as handler
 from app.core.auth import jwt_init
 from app.utils.logger import consoleHandler, fileHandler
@@ -24,32 +24,61 @@ Config.init_app(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 cors.init_app(app)  # 跨域初始化
 
-db.init_app(app) #数据库初始化
 
 
 
 #消息订阅
 #app.kafka_producer = KafkaProducer(bootstrap_servers=app.config['KAFLKA_HOST'],value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
-#基础功能
-from .api_1_0 import api as api_1_0_blueprint
-app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
+#注册各个模块蓝图
+app.register_blueprint(handler.token_bp)  #auth handler
 
-#校级管理员功能
-from .api_1_0.sadmin import sadmin as api_1_0_sadmin_blueprint
-app.register_blueprint(api_1_0_sadmin_blueprint, url_prefix='/api/v1.0/sadmin')
 
-#院级管理员功能
-from .api_1_0.cadmin import cadmin as api_1_0_cadmin_blueprint
-app.register_blueprint(api_1_0_cadmin_blueprint, url_prefix='/api/v1.0/cadmin')
+app.register_blueprint(handler.book_bp)
+app.register_blueprint(handler.book_rank_bp)
 
-#教师功能
-from .api_1_0.normal import normal as api_1_0_normal_blueprint
-app.register_blueprint(api_1_0_normal_blueprint, url_prefix='/api/v1.0/normal')
 
-#学生功能
-from .api_1_0.student import student as api_1_0_student_blueprint
-app.register_blueprint(api_1_0_student_blueprint, url_prefix='/api/v1.0/student')
+app.register_blueprint(handler.certificate_info_bp)
+app.register_blueprint(handler.certificate_rank_bp)
+
+
+app.register_blueprint(handler.college_bp)
+app.register_blueprint(handler.department_bp)
+
+
+app.register_blueprint(handler.innovation_project_bp)
+app.register_blueprint(handler.innovation_rank_bp)
+
+
+app.register_blueprint(handler.invigilate_info_bp)
+app.register_blueprint(handler.semester_info_bp)
+app.register_blueprint(handler.course_bp)
+
+
+app.register_blueprint(handler.teach_reform_paper_bp)
+
+
+app.register_blueprint(handler.teach_reform_project_bp)
+app.register_blueprint(handler.project_type_bp)
+app.register_blueprint(handler.project_child_type_bp)
+app.register_blueprint(handler.project_rank_bp)
+app.register_blueprint(handler.project_change_record_bp)
+
+
+app.register_blueprint(handler.student_bp)
+app.register_blueprint(handler.distribution_info_bp)
+app.register_blueprint(handler.class_info_bp)
+app.register_blueprint(handler.distribution_desire_bp)
+app.register_blueprint(handler.distribution_result_bp)
+
+
+app.register_blueprint(handler.teacher_bp)
+app.register_blueprint(handler.teacher_role_bp)
+app.register_blueprint(handler.teacher_info_bp)
+app.register_blueprint(handler.teacher_category_bp)
+app.register_blueprint(handler.teacher_title_bp)
+app.register_blueprint(handler.title_record_bp)
+
 
 #jwt
 jwt = jwt_init()
