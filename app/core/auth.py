@@ -20,7 +20,7 @@ def jwt_init():
 
             # 教师登录
             try:
-                account = kwargs.get('number', None) #教师工号或账号
+                account = kwargs.get('username', None) #教师工号或账号
                 password = kwargs.get('password', None)
                 teacher = dao.TeacherDao.get(query={'account': account, 'password': password})
                 if not teacher:
@@ -32,9 +32,9 @@ def jwt_init():
         else:
             # 学生登录
             try:
-                number = kwargs.get('number', None) #学号
+                number = kwargs.get('username', None) #学号
                 password = kwargs.get('password', None)
-                student = dao.StudentoDao.get(query={'number': number, 'password': password})
+                student = dao.StudentDao.get(query={'number': number, 'password': password})
                 if not student:
                     raise JWTError('Bad Request', '学号或密码错误')
                 return dict(student)

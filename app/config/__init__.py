@@ -5,7 +5,7 @@ from datetime import timedelta
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'THE_KEY_THAT_HARD_TO_GESS'
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@127.0.0.1/teach_achievement'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@127.0.0.1/teach_achievement'
 
     MYSQL_USER = 'root'  # 数据库用户名
     MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or ''  # 数据库密码

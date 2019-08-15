@@ -4,7 +4,6 @@ from flask import Flask
 from app.config import Config
 import app.handler as handler
 from flask_cors import CORS
-import app.handler as handler
 from app.core.auth import jwt_init
 from app.utils.logger import consoleHandler, fileHandler
 
