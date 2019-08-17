@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2019-08-15 18:09:12
+Date: 2019-08-17 20:41:33
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -50,6 +50,10 @@ CREATE TABLE `books` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of books
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for book_ranks
 -- ----------------------------
 DROP TABLE IF EXISTS `book_ranks`;
@@ -63,6 +67,17 @@ CREATE TABLE `book_ranks` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of book_ranks
+-- ----------------------------
+INSERT INTO `book_ranks` VALUES ('1', '国家级精品教材', null, null, null, '', '');
+INSERT INTO `book_ranks` VALUES ('2', '北京市精品教材', null, null, null, '', '');
+INSERT INTO `book_ranks` VALUES ('3', '校级教材', null, null, null, '', '');
+INSERT INTO `book_ranks` VALUES ('4', '“十一五”规划教材', null, null, null, '', '');
+INSERT INTO `book_ranks` VALUES ('5', '“十二五”规划教材', null, null, null, '', '');
+INSERT INTO `book_ranks` VALUES ('6', '  ', null, null, null, '', '');
+INSERT INTO `book_ranks` VALUES ('7', '“十三五”规划教材', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for certificate_infos
@@ -95,6 +110,10 @@ CREATE TABLE `certificate_infos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of certificate_infos
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for certificate_ranks
 -- ----------------------------
 DROP TABLE IF EXISTS `certificate_ranks`;
@@ -108,6 +127,14 @@ CREATE TABLE `certificate_ranks` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of certificate_ranks
+-- ----------------------------
+INSERT INTO `certificate_ranks` VALUES ('1', '国家级', null, null, null, '', '');
+INSERT INTO `certificate_ranks` VALUES ('2', '省部级', null, null, null, '', '');
+INSERT INTO `certificate_ranks` VALUES ('3', '北京市', null, null, null, '', '');
+INSERT INTO `certificate_ranks` VALUES ('4', '校级', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for class_infos
@@ -125,7 +152,15 @@ CREATE TABLE `class_infos` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `class_college` (`college_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of class_infos
+-- ----------------------------
+INSERT INTO `class_infos` VALUES ('1', '2018-1班', '100101', '1', null, null, '2019-08-17 13:37:33', '', '');
+INSERT INTO `class_infos` VALUES ('2', '2018-1班', '100101', '1', null, null, null, '', '');
+INSERT INTO `class_infos` VALUES ('3', '计算机软件1班', '100110', '1', '2019-08-17 16:44:26', null, null, '', '');
+INSERT INTO `class_infos` VALUES ('4', '计算机软件2班', '100110', '1', '2019-08-17 16:45:08', null, null, '', '');
 
 -- ----------------------------
 -- Table structure for colleges
@@ -141,6 +176,28 @@ CREATE TABLE `colleges` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=100119 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of colleges
+-- ----------------------------
+INSERT INTO `colleges` VALUES ('100101', '林学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100102', '水土保持学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100103', '生物科学与技术学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100104', '园林学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100105', '经济管理学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100106', '工学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100107', '材料科学与技术学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100108', '人文社会科学学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100109', '外语学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100110', '信息学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100111', '理学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100112', '自然保护区学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100113', '环境科学与工程学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100114', '艺术设计学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100115', '马克思主义学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100116', '继续教育学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100117', '国际学院', null, null, null, '', '');
+INSERT INTO `colleges` VALUES ('100118', '体育教学部', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for courses
@@ -166,6 +223,10 @@ CREATE TABLE `courses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+-- Records of courses
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for departments
 -- ----------------------------
 DROP TABLE IF EXISTS `departments`;
@@ -183,6 +244,16 @@ CREATE TABLE `departments` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `college_id` (`college_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of departments
+-- ----------------------------
+INSERT INTO `departments` VALUES ('26', '计算机软件教研室', '计算机软件', '536656', '100110', null, null, null, '', '');
+INSERT INTO `departments` VALUES ('28', '信息教研室', '信息', '654652', '100110', null, null, null, '', '');
+INSERT INTO `departments` VALUES ('29', '数字媒体教研室', '数字媒体技术', '551232', '100110', null, null, null, '', '');
+INSERT INTO `departments` VALUES ('30', '网络教研室', '网络工程', '654654', '100110', null, null, null, '', '');
+INSERT INTO `departments` VALUES ('31', '计算机实验教学中心', '计算机实验', '461232', '100110', null, null, null, '', '');
+INSERT INTO `departments` VALUES ('32', '行政', '行政', '654654', '100110', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for distribution_desires
@@ -206,13 +277,17 @@ CREATE TABLE `distribution_desires` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of distribution_desires
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for distribution_infos
 -- ----------------------------
 DROP TABLE IF EXISTS `distribution_infos`;
 CREATE TABLE `distribution_infos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `college_id` int(11) NOT NULL DEFAULT '0' COMMENT '所属学院id',
-  `department_id` varchar(255) NOT NULL DEFAULT '0' COMMENT '分流方向，从教研室中的major_name取得分流专业名称',
+  `department_id` int(11) NOT NULL DEFAULT '0' COMMENT '分流方向，从教研室中的major_name取得分流专业名称',
   `grade` int(11) NOT NULL DEFAULT '0' COMMENT '那个年级的分流专业，按照学生入学年份来分年级。',
   `start_time` timestamp NULL DEFAULT NULL COMMENT '开始时间',
   `end_time` timestamp NULL DEFAULT NULL COMMENT '结束时间',
@@ -223,7 +298,13 @@ CREATE TABLE `distribution_infos` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `distribution_college` (`college_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of distribution_infos
+-- ----------------------------
+INSERT INTO `distribution_infos` VALUES ('1', '100110', '26', '2018', '2019-08-17 13:07:05', '2019-08-17 13:07:08', null, null, null, '', '');
+INSERT INTO `distribution_infos` VALUES ('2', '100117', '29', '3', '2019-07-30 00:00:00', '2019-08-29 00:00:00', '2019-08-17 17:13:26', null, null, '', '');
 
 -- ----------------------------
 -- Table structure for distribution_results
@@ -233,7 +314,7 @@ CREATE TABLE `distribution_results` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `college_id` int(11) NOT NULL DEFAULT '0' COMMENT '所属学院id',
   `student_id` int(11) NOT NULL DEFAULT '0' COMMENT '学生学号',
-  `distribution_id` int(11) NOT NULL DEFAULT '0' COMMENT '被分配到的（志愿）专业id',
+  `distribution_info_id` int(11) NOT NULL DEFAULT '0' COMMENT '被分配到的（志愿）专业id',
   `class_info_id` int(11) NOT NULL DEFAULT '0' COMMENT '被分配到的班级id',
   `status` varchar(255) NOT NULL DEFAULT '' COMMENT '状态，是否确认分流结果【是、否】',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -243,7 +324,12 @@ CREATE TABLE `distribution_results` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `result_stu` (`student_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of distribution_results
+-- ----------------------------
+INSERT INTO `distribution_results` VALUES ('3', '100101', '1', '1', '3', '1', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for innovation_projects
@@ -277,6 +363,10 @@ CREATE TABLE `innovation_projects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of innovation_projects
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for innovation_ranks
 -- ----------------------------
 DROP TABLE IF EXISTS `innovation_ranks`;
@@ -290,6 +380,13 @@ CREATE TABLE `innovation_ranks` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of innovation_ranks
+-- ----------------------------
+INSERT INTO `innovation_ranks` VALUES ('1', '国家级', null, null, null, '', '');
+INSERT INTO `innovation_ranks` VALUES ('2', '北京市级', null, null, null, '', '');
+INSERT INTO `innovation_ranks` VALUES ('3', '校级', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for invigilate_infos
@@ -319,6 +416,10 @@ CREATE TABLE `invigilate_infos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of invigilate_infos
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for project_change_records
 -- ----------------------------
 DROP TABLE IF EXISTS `project_change_records`;
@@ -338,6 +439,10 @@ CREATE TABLE `project_change_records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of project_change_records
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for project_child_types
 -- ----------------------------
 DROP TABLE IF EXISTS `project_child_types`;
@@ -355,6 +460,18 @@ CREATE TABLE `project_child_types` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of project_child_types
+-- ----------------------------
+INSERT INTO `project_child_types` VALUES ('1', '教学团队', '1', null, null, null, '', '');
+INSERT INTO `project_child_types` VALUES ('2', '专业建设', '1', null, null, null, '', '');
+INSERT INTO `project_child_types` VALUES ('3', '精品课程', '1', null, null, null, '', '');
+INSERT INTO `project_child_types` VALUES ('4', '教材建设', '2', null, null, null, '', '');
+INSERT INTO `project_child_types` VALUES ('5', '教学改革研究项目', '3', null, null, null, '', '');
+INSERT INTO `project_child_types` VALUES ('6', '国家级大学生创新创业训练计划项目', '4', null, null, null, '', '');
+INSERT INTO `project_child_types` VALUES ('7', '北京市大学生科学研究与创业行动计划项目', '4', null, null, null, '', '');
+INSERT INTO `project_child_types` VALUES ('8', '校级大学生科研训练计划项目', '4', null, null, null, '', '');
+
+-- ----------------------------
 -- Table structure for project_ranks
 -- ----------------------------
 DROP TABLE IF EXISTS `project_ranks`;
@@ -368,6 +485,13 @@ CREATE TABLE `project_ranks` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of project_ranks
+-- ----------------------------
+INSERT INTO `project_ranks` VALUES ('1', '国家级', null, null, null, '', '');
+INSERT INTO `project_ranks` VALUES ('2', '北京市', null, null, null, '', '');
+INSERT INTO `project_ranks` VALUES ('3', '校级', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for project_types
@@ -386,6 +510,14 @@ CREATE TABLE `project_types` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of project_types
+-- ----------------------------
+INSERT INTO `project_types` VALUES ('1', '本科教学工程', '否', null, null, null, '', '');
+INSERT INTO `project_types` VALUES ('2', '教材建设', '否', null, null, null, '', '');
+INSERT INTO `project_types` VALUES ('3', '教学改革研究项目', '否', null, null, null, '', '');
+INSERT INTO `project_types` VALUES ('4', '大学生创新创业训练项目', '否', null, null, null, '', '');
+
+-- ----------------------------
 -- Table structure for semester_infos
 -- ----------------------------
 DROP TABLE IF EXISTS `semester_infos`;
@@ -402,6 +534,12 @@ CREATE TABLE `semester_infos` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of semester_infos
+-- ----------------------------
+INSERT INTO `semester_infos` VALUES ('3', '2018-2019 第1学期', '过期', null, null, null, '', '');
+INSERT INTO `semester_infos` VALUES ('4', '2018-2019 第2学期', '当前', null, null, null, '', '');
+
+-- ----------------------------
 -- Table structure for students
 -- ----------------------------
 DROP TABLE IF EXISTS `students`;
@@ -415,9 +553,19 @@ CREATE TABLE `students` (
   `class_info_id` int(11) NOT NULL DEFAULT '0' COMMENT '大类分流后的班级（id）',
   `college_id` int(11) NOT NULL DEFAULT '0',
   `gpa` double NOT NULL DEFAULT '0' COMMENT '大一学年gpa',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `updated_by` varchar(255) NOT NULL DEFAULT '',
+  `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `stu_class` (`class_info_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of students
+-- ----------------------------
+INSERT INTO `students` VALUES ('1', '7190304', '123456', 'test', '22', 'adfasfadff', '1', '100110', '3.5', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for teachers
@@ -440,6 +588,21 @@ CREATE TABLE `teachers` (
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of teachers
+-- ----------------------------
+INSERT INTO `teachers` VALUES ('1', 'root', '123456', '0', 'sadmin', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('2', 'xxxy-admin', '123456', '0', 'cadmin', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('12', 'lxy-admin', '123456', '0', 'cadmin', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('13', '670103', '123456', '0', 'normal', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('20', '650909', '123456', '0', 'normal', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('21', '550401', '123456', '0', 'normal', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('22', '610202', '123456', '0', 'normal', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('23', '536656', '123456', '0', 'normal', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('24', '654654', '123456', '0', 'normal', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('25', '551232', '123456', '0', 'normal', null, null, null, '', '');
+INSERT INTO `teachers` VALUES ('26', '654652', '123456', '0', 'normal', null, null, null, '', '');
+
+-- ----------------------------
 -- Table structure for teacher_categorys
 -- ----------------------------
 DROP TABLE IF EXISTS `teacher_categorys`;
@@ -453,6 +616,14 @@ CREATE TABLE `teacher_categorys` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of teacher_categorys
+-- ----------------------------
+INSERT INTO `teacher_categorys` VALUES ('1', '教师系列', null, null, null, '', '');
+INSERT INTO `teacher_categorys` VALUES ('2', '管理系列', null, null, null, '', '');
+INSERT INTO `teacher_categorys` VALUES ('3', '其他专技', null, null, null, '', '');
+INSERT INTO `teacher_categorys` VALUES ('4', '教师系列+管理系列', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for teacher_infos
@@ -494,6 +665,10 @@ CREATE TABLE `teacher_infos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of teacher_infos
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for teacher_roles
 -- ----------------------------
 DROP TABLE IF EXISTS `teacher_roles`;
@@ -508,6 +683,15 @@ CREATE TABLE `teacher_roles` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of teacher_roles
+-- ----------------------------
+INSERT INTO `teacher_roles` VALUES ('1', '校级管理员', 'sadmin', null, null, null, '', '');
+INSERT INTO `teacher_roles` VALUES ('2', '院级管理员', 'cadmin', null, null, null, '', '');
+INSERT INTO `teacher_roles` VALUES ('3', '科研院长', 'research_dean', null, null, null, '', '');
+INSERT INTO `teacher_roles` VALUES ('4', '教研室（系）主任', 'department_director', null, null, null, '', '');
+INSERT INTO `teacher_roles` VALUES ('5', '教师', 'normal', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for teacher_titles
@@ -525,6 +709,49 @@ CREATE TABLE `teacher_titles` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `teach_type` (`teacher_category_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of teacher_titles
+-- ----------------------------
+INSERT INTO `teacher_titles` VALUES ('1', '特设1级', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('2', '特设2级', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('3', '教授A1', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('4', '教授A2', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('5', '教授A3', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('6', '教授A4', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('7', '副教授B1', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('8', '副教授B2', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('9', '副教授B3', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('10', '讲师C1', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('11', '讲师C2', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('12', '助教D1', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('13', '助教D2', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('14', '正高职A1', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('15', '正高职A2', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('16', '正高职A3', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('17', '副高职B1', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('18', '副高职B2', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('19', '副高职B3', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('20', '中职C1', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('21', '中职C2', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('22', '中职C3', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('23', '初职D1', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('24', '初职D2', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('25', '初职D3', '3', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('26', '正处级A1', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('27', '正处级A2', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('28', '正处级A3', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('29', '副处级B1', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('30', '副处级B2', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('31', '副处级B3', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('32', 'C1', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('33', 'C2', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('34', 'C3', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('35', 'D1', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('36', 'D2', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('37', 'D3', '2', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('38', '助教', '1', null, null, null, '', '');
+INSERT INTO `teacher_titles` VALUES ('39', '  ', '2', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for teach_reform_papers
@@ -554,6 +781,10 @@ CREATE TABLE `teach_reform_papers` (
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of teach_reform_papers
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for teach_reform_projects
@@ -590,6 +821,10 @@ CREATE TABLE `teach_reform_projects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
+-- Records of teach_reform_projects
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for title_records
 -- ----------------------------
 DROP TABLE IF EXISTS `title_records`;
@@ -607,3 +842,9 @@ CREATE TABLE `title_records` (
   KEY `teacher_title_id` (`teacher_title_id`),
   KEY `record_teacher_number` (`teacher_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of title_records
+-- ----------------------------
+INSERT INTO `title_records` VALUES ('1', '2008-01-01 09:29:37', '670103', '6', null, null, null, '', '');
+INSERT INTO `title_records` VALUES ('2', '2012-01-01 09:31:33', '670103', '5', null, null, null, '', '');

@@ -189,8 +189,14 @@ class DistributionDesireController(easyapi.BaseController):
         distribution_info_id = res['distribution_info_id']
         distribution_info = dao.DistributionInfoDao.get(ctx=ctx, query={"id": distribution_info_id})
         if distribution_info is None:
-            distribution_info = {}
-        res['distribution_info'] = distribution_info
+            res['distribution_info'] = {}
+        else:
+            res['distribution_info'] = distribution_info
+            department_id = distribution_info['department_id']
+            department = dao.DepartmentDao.get(ctx=ctx, query={"id": department_id})
+            if department is None:
+                department = {}
+            res['distribution_info']['department'] = department
 
 
         return res
@@ -220,8 +226,14 @@ class DistributionDesireController(easyapi.BaseController):
             distribution_info_id = res_data['distribution_info_id']
             distribution_info = dao.DistributionInfoDao.get(ctx=ctx, query={"id": distribution_info_id})
             if distribution_info is None:
-                distribution_info = {}
-            res_data['distribution_info'] = distribution_info
+                res_data['distribution_info'] = {}
+            else:
+                res_data['distribution_info'] = distribution_info
+                department_id = distribution_info['department_id']
+                department = dao.DepartmentDao.get(ctx=ctx, query={"id": department_id})
+                if department is None:
+                    department = {}
+                res_data['distribution_info']['department'] = department
 
         return res, total
 
@@ -253,8 +265,14 @@ class DistributionResultController(easyapi.BaseController):
         distribution_info_id = res['distribution_info_id']
         distribution_info = dao.DistributionInfoDao.get(ctx=ctx, query={"id": distribution_info_id})
         if distribution_info is None:
-            distribution_info = {}
-        res['distribution_info'] = distribution_info
+            res['distribution_info'] = {}
+        else:
+            res['distribution_info'] = distribution_info
+            department_id = distribution_info['department_id']
+            department = dao.DepartmentDao.get(ctx=ctx, query={"id": department_id})
+            if department is None:
+                department = {}
+            res['distribution_info']['department'] = department
 
         # 添加 class_info 对象:
         class_info_id = res['class_info_id']
@@ -290,8 +308,14 @@ class DistributionResultController(easyapi.BaseController):
             distribution_info_id = res_data['distribution_info_id']
             distribution_info = dao.DistributionInfoDao.get(ctx=ctx, query={"id": distribution_info_id})
             if distribution_info is None:
-                distribution_info = {}
-            res_data['distribution_info'] = distribution_info
+                res_data['distribution_info'] = {}
+            else:
+                res_data['distribution_info'] = distribution_info
+                department_id = distribution_info['department_id']
+                department = dao.DepartmentDao.get(ctx=ctx, query={"id": department_id})
+                if department is None:
+                    department = {}
+                res_data['distribution_info']['department'] = department
 
             # 添加 class_info 对象:
             class_info_id = res_data['class_info_id']
