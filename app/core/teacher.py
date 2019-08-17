@@ -185,14 +185,14 @@ class TitleRecordController(easyapi.BaseController):
         teacher_id = res['teacher_id']
         teacher = dao.TeacherDao.get(ctx=ctx, query={"id": teacher_id})
         if teacher is None:
-            teacher = {}
+            res['teacher'] = {}
         else:
+            res['teacher'] = teacher
             teacher_info_id = teacher['teacher_info_id']
             teacher_info = dao.TeacherInfoDao.get(ctx=ctx, query={"id": teacher_info_id})
             if teacher_info is None:
                 teacher_info = {}
             res['teacher']['teacher_info'] = teacher_info
-        res['teacher'] = teacher
 
         # 添加 teacher_title 对象, 这里teacher_title是 教学职称/管理职称 都有可能
         teacher_title_id = res['teacher_title_id']
@@ -210,17 +210,17 @@ class TitleRecordController(easyapi.BaseController):
 
         for res_data in res:
             # 添加 teacher 对象:
-            teacher_id = res_data['teacher_id']
+            teacher_id = res['teacher_id']
             teacher = dao.TeacherDao.get(ctx=ctx, query={"id": teacher_id})
             if teacher is None:
-                teacher = {}
+                res_data['teacher'] = {}
             else:
+                res_data['teacher'] = teacher
                 teacher_info_id = teacher['teacher_info_id']
                 teacher_info = dao.TeacherInfoDao.get(ctx=ctx, query={"id": teacher_info_id})
                 if teacher_info is None:
                     teacher_info = {}
                 res_data['teacher']['teacher_info'] = teacher_info
-            res_data['teacher'] = teacher
 
             # 添加 teacher_title 对象, 这里teacher_title是 教学职称/管理职称 都有可能
             teacher_title_id = res_data['teacher_title_id']

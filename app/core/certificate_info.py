@@ -32,14 +32,14 @@ class CertificateInfoController(easyapi.BaseController):
         teacher_id = res['teacher_id']
         teacher = dao.TeacherDao.get(ctx=ctx, query={"id": teacher_id})
         if teacher is None:
-            teacher = {}
+            res['teacher'] = {}
         else:
+            res['teacher'] = teacher
             teacher_info_id = teacher['teacher_info_id']
             teacher_info = dao.TeacherInfoDao.get(ctx=ctx, query={"id": teacher_info_id})
             if teacher_info is None:
                 teacher_info = {}
             res['teacher']['teacher_info'] = teacher_info
-        res['teacher'] = teacher
 
         return res
 
@@ -66,14 +66,14 @@ class CertificateInfoController(easyapi.BaseController):
             teacher_id = res_data['teacher_id']
             teacher = dao.TeacherDao.get(ctx=ctx, query={"id": teacher_id})
             if teacher is None:
-                teacher = {}
+                res_data['teacher'] = {}
             else:
+                res_data['teacher'] = teacher
                 teacher_info_id = teacher['teacher_info_id']
                 teacher_info = dao.TeacherInfoDao.get(ctx=ctx, query={"id": teacher_info_id})
                 if teacher_info is None:
                     teacher_info = {}
-                    res_data['teacher']['teacher_info'] = teacher_info
-                res_data['teacher'] = teacher
+                res_data['teacher']['teacher_info'] = teacher_info
 
         return res, total
 

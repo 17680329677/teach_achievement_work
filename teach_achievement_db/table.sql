@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2019-08-10 22:41:38
+Date: 2019-08-15 18:09:12
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -428,7 +428,7 @@ CREATE TABLE `teachers` (
   `account` varchar(60) NOT NULL DEFAULT '' COMMENT '教师工号',
   `password` varchar(255) NOT NULL DEFAULT '' COMMENT '密码',
   `teacher_info_id` int(11) NOT NULL DEFAULT '0' COMMENT '指向teacher_info的id',
-  `role` int(11) NOT NULL DEFAULT '0' COMMENT '教师类型（1-系统管理员、2-学院管理员、3、普通教师）',
+  `role` varchar(255) NOT NULL DEFAULT '' COMMENT '教师类型（sadmin-系统管理员、cadmin-学院管理员、normal-普通教师）',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
